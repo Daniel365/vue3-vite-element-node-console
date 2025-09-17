@@ -1,0 +1,210 @@
+<!--
+ * @Author: 350296245@qq.com
+ * @Date: 2025-09-06 20:44:18
+ * @Description: 
+-->
+<template>
+  <a-drawer
+    :title="isEdit ? $t('action.edit') : $t('action.add')"
+    :open="visible"
+    :width="500"
+    @close="handleClose"
+  >
+    <a-form
+      ref="formRef"
+      :model="formState"
+      :rules="rules"
+      :label-col="{ span: 4 }"
+    >
+      <!-- 动态渲染表单字段 -->
+      <template v-for="item in currentFields" :key="item.key">
+        <a-form-item :label="$t(item.label)" :name="item.key">
+          <!-- 树形选择器 -->
+          <MenuTreeSelect
+            v-if="item.type === FormTypeEnum.TREE_SELECT"
+            v-model:modelValue="(formState as any)[item.key]"
+            :placeholder="$t('form.selectParentMenu')"
+          />
+          <!-- 树形选择器 -->
+          <a-select
+            v-else-if="item.type === FormTypeEnum.SELECT"
+            v-model:value="(formState as any)[item.key]"
+            :options="item?.options || []"
+            show-search
+            :filter-option="(val: any, option: any) => option.label.indexOf(val) >= 0"
+          />
+          <!-- 单选组 -->
+          <RadioGroup
+            v-else-if="item.type === FormTypeEnum.RADIO_GROUP"
+            v-model:modelValue="(formState as any)[item.key]"
+            :options="item?.options || []"
+          />
+          <!-- 数字输入 -->
+          <a-input-number
+            v-else-if="item.type === FormTypeEnum.INPUT_NUMBER"
+            v-model:value="(formState as any)[item.key]"
+            :min="0"
+            :placeholder="$t('form.enterSort')"
+          />
+          <!-- 图标选择器 -->
+          <IconPicker
+            v-else-if="item.type === FormTypeEnum.CUSTOM && item.key === 'icon'"
+            v-model:modelValue="(formState as any)[item.key]"
+          />
+          <!-- 普通输入框 -->
+          <a-input
+            v-else
+            v-model:value="(formState as any)[item.key]"
+            :placeholder="getPlaceholder(item.key)"
+          />
+        </a-form-item>
+      </template>
+    </a-form>
+    <template #footer>
+      <div style="text-align: right">
+        <a-button @click="handleClose" style="margin-right: 8px">
+          {{ $t("action.cancel") }}
+        </a-button>
+        <a-button type="primary" :loading="loading" @click="handleSubmit">
+          {{ $t("action.save") }}
+        </a-button>
+      </div>
+    </template>
+  </a-drawer>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive, watch, computed } from "vue";
+import { message } from "ant-design-vue";
+import type { FormInstance } from "ant-design-vue";
+// api
+import { menuManageApi } from "@/api";
+// hookss
+import { useI18nUtil } from "@/hooks/i18ns";
+// utils
+import { handleReturnResults } from "@/utils/instance";
+import { defaultFormData, getFormFields } from "../utils/const";
+// type
+import { ActionTypeEnum, FormTypeEnum } from "@/enums";
+import { MenuFormProps, MenuListItem } from "@/api/menuManage/data.d";
+// components
+import RadioGroup from "@/components/RadioGroup/index.vue";
+import MenuTreeSelect from "./MenuTreeSelect.vue";
+import IconPicker from "@/components/IconPicker/index.vue";
+
+interface Props {
+  visible: boolean;
+  actionType?: ActionTypeEnum;
+  editData?: MenuListItem;
+}
+
+const props = defineProps<Props>();
+const emit = defineEmits<{
+  success: [];
+  onClose: [];
+}>();
+
+const { getI18nText } = useI18nUtil();
+const formRef = ref<FormInstance>();
+const loading = ref(false);
+
+// 是否编辑
+const isEdit = computed(() => props.actionType === ActionTypeEnum.EDIT);
+// 当前表单字段配置
+const currentFields = computed(() => getFormFields(formState.type));
+
+const formState: MenuFormProps = reactive({ ...defaultFormData });
+
+// 获取占位符文本
+const getPlaceholder = (key: string) => {
+  const placeholderMap: Record<string, string> = {
+    name: "form.enterMenuName",
+    routeName: "form.enterRouteName",
+    routePath: "form.enterRoutePath",
+    component: "form.enterComponent",
+    icon: "form.enterIcon",
+    permission: "form.enterPermission",
+  };
+  return getI18nText(placeholderMap[key] || "form.pleaseSelect");
+};
+const rules = {
+  name: [{ required: true, message: getI18nText("form.enterMenuName") }],
+  type: [{ required: true, message: getI18nText("form.selectType") }],
+  sort: [{ required: true, message: getI18nText("form.enterSort") }],
+};
+
+watch(
+  () => props.editData,
+  (val) => {
+    if (
+      props.actionType === ActionTypeEnum.EDIT ||
+      props.actionType === ActionTypeEnum.COPY
+    ) {
+      Object.assign(formState, val);
+    } else {
+      Object.assign(formState, defaultFormData);
+    }
+  },
+  { immediate: true }
+);
+
+// 关闭抽屉
+const handleClose = () => {
+  formRef.value?.resetFields();
+  emit("onClose");
+};
+
+// 提交成功
+const onSubmitSuccess = () => {
+  handleClose();
+  emit("success");
+};
+
+// 根据菜单类型清理表单数据
+const cleanFormDataByType = (data: MenuFormProps) => {
+  const cleanData: Partial<MenuFormProps> = {};
+  const fields = getFormFields(data.type);
+
+  fields.forEach((field) => {
+    if (data[field.key as keyof MenuFormProps] !== undefined) {
+      (cleanData as any)[field.key] = data[field.key as keyof MenuFormProps];
+    }
+  });
+
+  return cleanData;
+};
+
+// 提交表单
+const handleSubmit = async () => {
+  try {
+    await formRef.value?.validate();
+    loading.value = true;
+
+    const cleanedData = cleanFormDataByType(formState);
+    const api = isEdit.value
+      ? menuManageApi.onEdit({
+          id: formState.id,
+          ...cleanedData,
+        })
+      : menuManageApi.onCreate(cleanedData);
+
+    const response = await api.finally(() => {
+      loading.value = false;
+    });
+
+    handleReturnResults({
+      params: response,
+      onSuccess: () => {
+        message.success(
+          getI18nText(
+            isEdit.value ? "action.updateSuccess" : "action.createSuccess"
+          )
+        );
+        onSubmitSuccess();
+      },
+    });
+  } catch (error) {
+    console.error("操作失败:", error);
+  }
+};
+</script>

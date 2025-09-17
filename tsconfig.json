@@ -1,0 +1,40 @@
+{
+  // "files": [],
+  // "references": [
+  //   { "path": "./tsconfig.app.json" }
+  //   { "path": "./tsconfig.node.json" }
+  // ]
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "lib": ["esnext", "dom"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    // "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types" // 如果有自定义类型目录
+    ],
+    "types": ["vue", "vite/client", "node"] // 确保包含必要类型
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "vite.config.ts",
+    "eslint.config.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
