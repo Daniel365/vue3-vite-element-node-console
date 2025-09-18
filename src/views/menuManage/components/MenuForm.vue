@@ -75,8 +75,8 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, computed } from "vue";
-import { message } from "ant-design-vue";
-import type { FormInstance } from "ant-design-vue";
+import { ElMessage } from "element-plus";
+import type { FormInstance } from "element-plus";
 // api
 import { menuManageApi } from "@/api";
 // hookss
@@ -195,7 +195,7 @@ const handleSubmit = async () => {
     handleReturnResults({
       params: response,
       onSuccess: () => {
-        message.success(
+        ElMessage.success(
           getI18nText(
             isEdit.value ? "action.updateSuccess" : "action.createSuccess"
           )

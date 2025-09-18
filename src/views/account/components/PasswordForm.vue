@@ -5,21 +5,23 @@
 -->
 
 <template>
-  <Form
+  <el-form
     ref="formRef"
     :model="formState"
     :rules="rules"
-    layout="vertical"
-    @finish="handleSubmit"
+    label-position="top"
+    @submit.prevent="handleSubmit"
   >
-    <Form.Item :label="$t('account.currentPassword')" name="currentPassword">
-      <Input.Password
-        v-model:value="formState.currentPassword"
+    <el-form-item :label="$t('account.currentPassword')" prop="currentPassword">
+      <el-input
+        v-model="formState.currentPassword"
+        type="password"
         :placeholder="getRequiredMessage('currentPassword')"
+        show-password
       />
-    </Form.Item>
+    </el-form-item>
 
-    <Form.Item :label="$t('account.verificationCode')" name="code">
+    <el-form-item :label="$t('account.verificationCode')" prop="code">
       <CodeInput
         v-model:modelValue="formState.code"
         :placeholder="getRequiredMessage('code')"
@@ -31,34 +33,38 @@
           })
         "
       />
-    </Form.Item>
+    </el-form-item>
 
-    <Form.Item :label="$t('account.newPassword')" name="password">
-      <Input.Password
-        v-model:value="formState.password"
+    <el-form-item :label="$t('account.newPassword')" prop="password">
+      <el-input
+        v-model="formState.password"
+        type="password"
         :placeholder="getRequiredMessage('newPassword')"
+        show-password
       />
-    </Form.Item>
+    </el-form-item>
 
-    <Form.Item :label="$t('account.confirmPassword')" name="confirmPassword">
-      <Input.Password
-        v-model:value="formState.confirmPassword"
+    <el-form-item :label="$t('account.confirmPassword')" prop="confirmPassword">
+      <el-input
+        v-model="formState.confirmPassword"
+        type="password"
         :placeholder="getRequiredMessage('confirmPassword')"
+        show-password
       />
-    </Form.Item>
+    </el-form-item>
 
-    <Form.Item>
-      <Button type="primary" html-type="submit" :loading="loading">
+    <el-form-item>
+      <el-button type="primary" native-type="submit" :loading="loading">
         {{ $t("account.changePassword") }}
-      </Button>
-    </Form.Item>
-  </Form>
+      </el-button>
+    </el-form-item>
+  </el-form>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, watch } from "vue";
-import { Form, Input, Button, message } from "ant-design-vue";
-import type { FormInstance } from "ant-design-vue";
+import { ElMessage } from "element-plus";
+import type { FormInstance } from "element-plus";
 // hooks
 import { useI18nUtil } from "@/hooks/i18ns";
 // api
@@ -109,7 +115,7 @@ const rules = {
       validator: (_: any, value: string) => {
         if (value && value !== formState.password) {
           return Promise.reject(
-            getI18nText("account.message.passwordMismatch")
+            new Error(getI18nText("account.message.passwordMismatch"))
           );
         }
         return Promise.resolve();
@@ -139,13 +145,13 @@ const handleSubmit = async () => {
     handleReturnResults({
       params: response,
       onSuccess: () => {
-        message.success(getI18nText("account.passwordChangeSuccess"));
+        ElMessage.success(getI18nText("account.passwordChangeSuccess"));
         formRef.value?.resetFields();
       },
     });
   } catch (error) {
     console.error("修改密码失败:", error);
-    message.error(getI18nText("account.passwordChangeFail"));
+    ElMessage.error(getI18nText("account.passwordChangeFail"));
   }
 };
 </script>

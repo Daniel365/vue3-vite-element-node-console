@@ -5,40 +5,40 @@
 -->
 
 <template>
-  <Form
+  <ElForm
     ref="formRef"
     :model="formState"
     :rules="rules"
-    layout="vertical"
-    @finish="handleSubmit"
+    label-position="top"
+    @submit.prevent="handleSubmit"
   >
-    <Form.Item :label="$t('account.username')" name="username">
-      <Input
-        v-model:value="formState.username"
+    <el-form-item :label="$t('account.username')" prop="username">
+      <ElInput
+        v-model="formState.username"
         :placeholder="getRequiredMessage('username')"
       />
-    </Form.Item>
+    </el-form-item>
 
-    <Form.Item :label="$t('account.email')" name="email">
-      <Input
+    <el-form-item :label="$t('account.email')" prop="email">
+      <ElInput
         type="email"
-        v-model:value="formState.email"
+        v-model="formState.email"
         :placeholder="getRequiredMessage('email')"
       />
-    </Form.Item>
+    </el-form-item>
 
-    <Form.Item>
-      <Button type="primary" html-type="submit" :loading="loading">
+    <el-form-item>
+      <ElButton type="primary" native-type="submit" :loading="loading" @click="handleSubmit">
         {{ $t("account.updateProfile") }}
-      </Button>
-    </Form.Item>
-  </Form>
+      </ElButton>
+    </el-form-item>
+  </ElForm>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, watch } from "vue";
-import { Form, Input, Button, message } from "ant-design-vue";
-import type { FormInstance } from "ant-design-vue";
+import { ElForm, ElInput, ElButton, ElMessage } from "element-plus";
+import type { FormInstance } from "element-plus";
 // hooks
 import { useI18nUtil } from "@/hooks/i18ns";
 // store
@@ -91,12 +91,12 @@ const handleSubmit = async () => {
       onSuccess: () => {
         // 更新store中的accountInfo
         setAccountInfo(formState);
-        message.success(getI18nText("action.updateSuccess"));
+        ElMessage.success(getI18nText("action.updateSuccess"));
       },
     });
   } catch (error) {
     console.error("更新个人资料失败:", error);
-    message.error(getI18nText("action.updateFail"));
+    ElMessage.error(getI18nText("action.updateFail"));
   }
 };
 </script>

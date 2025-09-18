@@ -5,23 +5,26 @@
 -->
 <template>
   <div class="profile-container">
-    <Card :title="$t('account.personalCenter')" class="profile-card">
-      <Tabs v-model:activeKey="activeTab">
-        <TabPane key="profile" :tab="$t('account.profile')">
+    <ElCard class="profile-card">
+      <template #header>
+        <span>{{ $t('account.personalCenter') }}</span>
+      </template>
+      <ElTabs v-model="activeTab">
+        <ElTabPane name="profile" :label="$t('account.profile')">
           <ProfileForm :accountInfo="accountInfo" />
-        </TabPane>
+        </ElTabPane>
 
-        <TabPane key="password" :tab="$t('account.changePassword')">
+        <ElTabPane name="password" :label="$t('account.changePassword')">
           <PasswordForm :accountInfo="accountInfo" />
-        </TabPane>
-      </Tabs>
-    </Card>
+        </ElTabPane>
+      </ElTabs>
+    </ElCard>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { Card, Tabs, TabPane } from "ant-design-vue";
+import { ElCard, ElTabs, ElTabPane } from "element-plus";
 // store
 import { useAccountStore } from "@/store";
 // components

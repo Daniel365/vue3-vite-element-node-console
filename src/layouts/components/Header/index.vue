@@ -11,45 +11,41 @@
 
     <div class="header-right">
       <!-- 语言切换 -->
-      <a-dropdown>
-        <a-button type="text" class="header-btn">
-          <GlobalOutlined />
-        </a-button>
-        <template #overlay>
-          <a-menu @click="({ key }) => onLanguageChange(key)">
-            <a-menu-item :key="LanguageEnum.ZH">{{
+      <el-dropdown @command="onLanguageChange">
+        <el-button text class="header-btn">
+          <el-icon><Globe /></el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item :command="LanguageEnum.ZH">{{
               $t("common.zh")
-            }}</a-menu-item>
-            <a-menu-item :key="LanguageEnum.EN">{{
+            }}</el-dropdown-item>
+            <el-dropdown-item :command="LanguageEnum.EN">{{
               $t("common.en")
-            }}</a-menu-item>
-          </a-menu>
+            }}</el-dropdown-item>
+          </el-dropdown-menu>
         </template>
-      </a-dropdown>
+      </el-dropdown>
 
       <!-- 用户信息 -->
-      <a-dropdown>
-        <a-button type="text" class="header-btn user-btn">
-          <UserOutlined />
+      <el-dropdown @command="handleUserMenuClick">
+        <el-button text class="header-btn user-btn">
+          <el-icon><User /></el-icon>
           <span class="username">{{ accountInfo.username }}</span>
-        </a-button>
-        <template #overlay>
-          <a-menu>
-            <a-menu-item
-              key="userCenter"
-              @click="goToPage(RouterPath.ACCOUNT_PROFILE)"
-            >
-              <UserOutlined />
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="userCenter">
+              <el-icon><User /></el-icon>
               {{ $t("common.userCenter") }}
-            </a-menu-item>
-            <a-menu-divider />
-            <a-menu-item key="logout" @click="handleLogout">
-              <LogoutOutlined />
+            </el-dropdown-item>
+            <el-dropdown-item divided command="logout">
+              <el-icon><SwitchButton /></el-icon>
               {{ $t("common.logout") }}
-            </a-menu-item>
-          </a-menu>
+            </el-dropdown-item>
+          </el-dropdown-menu>
         </template>
-      </a-dropdown>
+      </el-dropdown>
     </div>
   </div>
 </template>
@@ -57,10 +53,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import {
-  GlobalOutlined,
-  UserOutlined,
-  LogoutOutlined,
-} from "@ant-design/icons-vue";
+  Globe,
+  User,
+  SwitchButton,
+} from "@element-plus/icons-vue";
 import { useAppStore, useAccountStore } from "@/store";
 // hooks
 import { useI18nUtil } from "@/hooks/i18ns";
@@ -83,6 +79,14 @@ const accountInfo = computed(() => accountStore.accountInfo);
 const onLanguageChange = (val: string) => {
   locale.value = val;
   appStore.changeLanguage(val);
+};
+
+const handleUserMenuClick = (command: string) => {
+  if (command === 'userCenter') {
+    goToPage(RouterPath.ACCOUNT_PROFILE);
+  } else if (command === 'logout') {
+    handleLogout();
+  }
 };
 
 const handleLogout = () => {

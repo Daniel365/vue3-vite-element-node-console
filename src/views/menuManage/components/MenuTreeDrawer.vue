@@ -5,40 +5,45 @@
  -->
 <template>
   <a-drawer
-    v-model:open="visible"
+    v-model="visible"
     :title="title || $t('menuManage.permissionAssignment', { roleName: '-' })"
-    placement="right"
-    :width="400"
+    direction="rtl"
+    :size="400"
     @close="handleClose"
   >
     <div class="menu-tree-drawer">
       <div class="search-box">
         <a-input
-          v-model:value="searchValue"
+          v-model="searchValue"
           :placeholder="$t('menuManage.menuPermissionName')"
-          :suffix-icon="h(SearchOutlined)"
-        />
-        <a-button type="link" @click="handleCollapse">{{
+        >
+          <template #prefix>
+            <a-icon><Search /></a-icon>
+          </template>
+        </a-input>
+        <a-button type="primary" link @click="handleCollapse">{{
           $t("menuManage.collapse")
         }}</a-button>
       </div>
 
       <div class="control-box">
-        <a-checkbox v-model:checked="checkStrictly">{{
+        <a-checkbox v-model="checkStrictly">{{
           $t("menuManage.parentChildLinked")
         }}</a-checkbox>
       </div>
 
       <div class="tree-container">
         <a-tree
-          v-model:checkedKeys="checkedKeys"
-          :tree-data="treeData"
-          :field-names="{ title: 'label', key: 'value', children: 'children' }"
-          checkable
+          ref="treeRef"
+          v-model:checked-keys="checkedKeys"
+          :data="treeData"
+          :props="{ label: 'label', children: 'children' }"
+          show-checkbox
           :check-strictly="!checkStrictly"
-          :expanded-keys="expandedKeys"
+          :default-expanded-keys="expandedKeys"
           :auto-expand-parent="false"
-          @expand="onExpand"
+          node-key="value"
+          @node-expand="onExpand"
           @check="onCheck"
         />
       </div>
@@ -54,11 +59,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, h } from "vue";
-import { SearchOutlined } from "@ant-design/icons-vue";
+import { ref, watch, onMounted } from "vue";
+import { Search } from "@element-plus/icons-vue";
 import { menuManageApi } from "@/api";
 import { handleReturnResults } from "@/utils/instance";
-import { isObject } from "@/utils/dataJudgment";
 
 interface TreeNode {
   label: string;
@@ -90,6 +94,7 @@ const treeData = ref<TreeNode[]>([]);
 const checkedKeys = ref<(string | number)[]>(props.modelValue);
 const expandedKeys = ref<(string | number)[]>([]);
 const checkStrictly = ref(false);
+const treeRef = ref();
 
 watch(
   () => props.open,
@@ -125,16 +130,26 @@ const getTreeList = async () => {
   }
 };
 
-const onExpand = (keys: (string | number)[]) => {
-  expandedKeys.value = keys;
+const onExpand = (data: any, node: any) => {
+  const expandedNodes = treeRef.value?.store?.nodesMap;
+  if (expandedNodes) {
+    expandedKeys.value = Object.keys(expandedNodes).filter(
+      key => expandedNodes[key].expanded
+    );
+  }
 };
 
-const onCheck = (data: any) => {
-  checkedKeys.value = isObject(data) ? data.checked : data;
+const onCheck = (data: any, checkedInfo: any) => {
+  checkedKeys.value = checkedInfo.checkedKeys;
 };
 
 const handleCollapse = () => {
   expandedKeys.value = [];
+  if (treeRef.value) {
+    treeRef.value.store._getAllNodes().forEach((node: any) => {
+      node.expanded = false;
+    });
+  }
 };
 
 const handleClose = () => {
@@ -213,6 +228,7 @@ onMounted(() => {
 .search-box {
   margin-bottom: 12px;
   display: flex;
+  gap: 8px;
 }
 
 .control-box {
@@ -224,7 +240,7 @@ onMounted(() => {
 .tree-container {
   flex: 1;
   overflow-y: auto;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #dcdfe6;
   border-radius: 6px;
   padding: 8px;
 }

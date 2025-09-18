@@ -41,6 +41,8 @@
 import { ref, reactive, computed } from "vue";
 // hooks
 import { useI18nUtil } from "@/hooks/i18ns";
+// utils
+import { menuTypeOptions, menuVisibleStatusOptions } from "./utils/options";
 // type
 import type { MenuListItem } from "@/api/menuManage/data.d";
 import { ActionTypeEnum, FormTypeEnum } from "@/enums";
@@ -48,7 +50,6 @@ import { ActionTypeEnum, FormTypeEnum } from "@/enums";
 import MenuForm from "./components/MenuForm.vue";
 import MenuTable from "./components/MenuTable.vue";
 import SearchForm from "@/components/SearchForm/index.vue";
-import { menuTypeOptions, menuVisibleStatusOptions } from "./utils/options";
 
 // 国际化工具
 const { getI18nText } = useI18nUtil();

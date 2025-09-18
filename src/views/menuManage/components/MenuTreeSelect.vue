@@ -4,20 +4,20 @@
  * @Description: 树形菜单选择
 -->
 <template>
-  <TreeSelect
-    v-model:value="selectedValue"
-    show-search
+  <ElTreeSelect
+    v-model="selectedValue"
+    :data="treeData"
     :placeholder="placeholder"
     :loading="loading"
     :disabled="disabled"
-    :tree-data="treeData"
-    :field-names="fieldNames"
+    :props="fieldNames"
+    filterable
   />
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
-import { TreeSelect } from "ant-design-vue";
+import { ElTreeSelect } from "element-plus";
 import { menuManageApi } from "@/api";
 // utils
 import { handleReturnResults } from "@/utils/instance";

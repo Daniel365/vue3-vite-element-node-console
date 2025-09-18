@@ -26,12 +26,12 @@
         </template>
         <!-- 操作列渲染 -->
         <template v-if="column.key === 'action'">
-          <a-button type="link" @click="handleEdit(record)">{{
+          <el-button type="primary" link @click="handleEdit(record)">{{
             $t("action.edit")
-          }}</a-button>
-          <a-button type="link" danger @click="handleDelete(record)">{{
+          }}</el-button>
+          <el-button type="danger" link @click="handleDelete(record)">{{
             $t("action.delete")
-          }}</a-button>
+          }}</el-button>
         </template>
       </template>
     </DataTable>
@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed } from "vue";
-import { Modal, message } from "ant-design-vue";
+import { ElMessageBox, ElMessage } from "element-plus";
 // api
 import { userManageApi } from "@/api";
 // hooks
@@ -134,20 +134,26 @@ const handleEdit = (record: UserListItem) => {
 
 // 处理删除用户
 const handleDelete = (record: UserListItem) => {
-  Modal.confirm({
-    title: getI18nText("action.confirmDelete"),
-    content: getI18nText("userManage.deleteConfirm", {
+  ElMessageBox.confirm(
+    getI18nText("userManage.deleteConfirm", {
       username: record.username,
     }),
-    onOk: async () => {
-      try {
-        await userManageApi.onDelete({ uuid: record.uuid });
-        message.success(getI18nText("action.deleteSuccess"));
-        tableRef.value?.refresh();
-      } catch (error) {
-        message.error(getI18nText("action.deleteFailed"));
-      }
-    },
+    getI18nText("action.confirmDelete"),
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  ).then(async () => {
+    try {
+      await userManageApi.onDelete({ uuid: record.uuid });
+      ElMessage.success(getI18nText("action.deleteSuccess"));
+      tableRef.value?.refresh();
+    } catch (error) {
+      ElMessage.error(getI18nText("action.deleteFailed"));
+    }
+  }).catch(() => {
+    // 用户取消删除
   });
 };
 </script>

@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
-import { Modal, message } from "ant-design-vue";
+import { ElMessageBox, ElMessage } from "element-plus";
 // api
 import { menuManageApi } from "@/api";
 // hooks
@@ -186,22 +186,29 @@ const handleEdit = (record: MenuListItem) => {
 
 // 处理删除菜单
 const handleDelete = (record: MenuListItem) => {
-  Modal.confirm({
-    title: "确认删除该菜单吗？",
-    onOk: async () => {
-      try {
-        const response = await menuManageApi.onDelete({ id: record.id });
-        handleReturnResults({
-          params: response,
-          onSuccess: () => {
-            message.success(getI18nText("action.deleteSuccess"));
-            refresh();
-          },
-        });
-      } catch (error) {
-        console.error("删除失败:", error);
-      }
-    },
+  ElMessageBox.confirm(
+    "确认删除该菜单吗？",
+    "提示",
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  ).then(async () => {
+    try {
+      const response = await menuManageApi.onDelete({ id: record.id });
+      handleReturnResults({
+        params: response,
+        onSuccess: () => {
+          ElMessage.success(getI18nText("action.deleteSuccess"));
+          refresh();
+        },
+      });
+    } catch (error) {
+      console.error("删除失败:", error);
+    }
+  }).catch(() => {
+    // 用户取消删除
   });
 };
 

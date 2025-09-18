@@ -1,25 +1,25 @@
 <template>
   <!-- 编辑用户抽屉 -->
-  <a-drawer
+  <el-drawer
     :title="$t('userManage.editUser')"
-    :open="visible"
-    :width="500"
+    v-model="visible"
+    :size="500"
     @close="handleClose"
   >
-    <a-form
+    <el-form
       ref="formRef"
       :model="formData"
       :rules="rules"
-      :label-col="{ span: 4 }"
+      label-width="80px"
     >
-      <a-form-item :label="$t('form.username')" name="username">
-        <a-input
-          v-model:value="formData.username"
+      <el-form-item :label="$t('form.username')" prop="username">
+        <el-input
+          v-model="formData.username"
           :placeholder="$t('form.enterUsername')"
         />
-      </a-form-item>
+      </el-form-item>
 
-      <a-form-item :label="$t('form.role')" name="roleUuid">
+      <el-form-item :label="$t('form.role')" prop="roleUuid">
         <ApiSelect
           v-model="formData.roleUuid"
           :api="roleManageApi.getList"
@@ -28,33 +28,33 @@
           value-field="uuid"
           :placeholder="$t('form.selectRole')"
         />
-      </a-form-item>
+      </el-form-item>
 
-      <a-form-item :label="$t('form.status')" name="status">
-        <a-switch
-          v-model:checked="formData.status"
-          :checked-children="$t('form.enabled')"
-          :un-checked-children="$t('form.disabled')"
+      <el-form-item :label="$t('form.status')" prop="status">
+        <el-switch
+          v-model="formData.status"
+          :active-text="$t('form.enabled')"
+          :inactive-text="$t('form.disabled')"
         />
-      </a-form-item>
-    </a-form>
+      </el-form-item>
+    </el-form>
 
     <template #footer>
       <div style="text-align: right">
-        <a-button @click="handleClose" style="margin-right: 8px">
+        <el-button @click="handleClose" style="margin-right: 8px">
           {{ $t("action.cancel") }}
-        </a-button>
-        <a-button type="primary" :loading="loading" @click="handleSubmit">
+        </el-button>
+        <el-button type="primary" :loading="loading" @click="handleSubmit">
           {{ $t("action.save") }}
-        </a-button>
+        </el-button>
       </div>
     </template>
-  </a-drawer>
+  </el-drawer>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from "vue";
-import { message, type FormInstance } from "ant-design-vue";
+import { ref, reactive, watch, computed } from "vue";
+import { ElMessage, type FormInstance } from "element-plus";
 // api
 import { userManageApi, roleManageApi } from "@/api";
 // hooks
@@ -76,6 +76,11 @@ const emit = defineEmits<{
   "update:visible": [value: boolean];
   success: [];
 }>();
+
+const visible = computed({
+  get: () => props.visible,
+  set: (value: boolean) => emit("update:visible", value),
+});
 
 // 国际化工具
 const { getI18nText } = useI18nUtil();
@@ -147,13 +152,13 @@ const handleSubmit = async () => {
     handleReturnResults({
       params: response,
       onSuccess: () => {
-        message.success(getI18nText("action.submitSuccess"));
+        ElMessage.success(getI18nText("action.submitSuccess"));
         emit("success");
         handleClose();
       },
     });
   } catch (error) {
-    message.error(getI18nText("action.submitFailed") + error);
+    ElMessage.error(getI18nText("action.submitFailed") + error);
   }
 };
 </script>

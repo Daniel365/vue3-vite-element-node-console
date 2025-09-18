@@ -12,13 +12,13 @@
 
     <!-- 新增按钮 -->
     <div style="margin-bottom: 16px">
-      <a-button
+      <el-button
         v-hasPerm="[requestPath.ROLE_CREATE]"
         type="primary"
         @click="handleAdd"
       >
         {{ $t("action.add") }}
-      </a-button>
+      </el-button>
     </div>
 
     <!-- 数据表格 -->
@@ -37,15 +37,15 @@
         </template>
         <!-- 操作列渲染 -->
         <template v-if="column.key === 'action'">
-          <a-button type="link" @click="handleEdit(record)">{{
+          <el-button type="primary" link @click="handleEdit(record)">{{
             $t("action.edit")
-          }}</a-button>
-          <a-button type="link" @click="handleAssignPermission(record)">{{
+          }}</el-button>
+          <el-button type="primary" link @click="handleAssignPermission(record)">{{
             $t("roleManage.assignPermission")
-          }}</a-button>
-          <a-button type="link" danger @click="handleDelete(record)">{{
+          }}</el-button>
+          <el-button type="danger" link @click="handleDelete(record)">{{
             $t("action.delete")
-          }}</a-button>
+          }}</el-button>
         </template>
       </template>
     </DataTable>
@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed } from "vue";
-import { Modal, message } from "ant-design-vue";
+import { ElMessageBox, ElMessage } from "element-plus";
 // api
 import { roleManageApi } from "@/api";
 // hooks
@@ -175,29 +175,35 @@ const handlePermissionConfirm = async (menuIds: (string | number)[]) => {
       uuid: currentRole.value.uuid,
       menuIds,
     });
-    message.success(getI18nText("roleManage.assignSuccess"));
+    ElMessage.success(getI18nText("roleManage.assignSuccess"));
     tableRef.value?.refresh();
   } catch (error) {
-    message.error(getI18nText("action.failed"));
+    ElMessage.error(getI18nText("action.failed"));
   }
 };
 
 // 处理删除角色
 const handleDelete = (record: RoleListItem) => {
-  Modal.confirm({
-    title: getI18nText("action.confirmDelete"),
-    content: getI18nText("roleManage.deleteConfirm", {
+  ElMessageBox.confirm(
+    getI18nText("roleManage.deleteConfirm", {
       roleName: record.name,
     }),
-    onOk: async () => {
-      try {
-        await roleManageApi.onDelete({ uuid: record.uuid });
-        message.success(getI18nText("action.deleteSuccess"));
-        tableRef.value?.refresh();
-      } catch (error) {
-        message.error(getI18nText("action.deleteFailed"));
-      }
-    },
+    getI18nText("action.confirmDelete"),
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  ).then(async () => {
+    try {
+      await roleManageApi.onDelete({ uuid: record.uuid });
+      ElMessage.success(getI18nText("action.deleteSuccess"));
+      tableRef.value?.refresh();
+    } catch (error) {
+      ElMessage.error(getI18nText("action.deleteFailed"));
+    }
+  }).catch(() => {
+    // 用户取消删除
   });
 };
 </script>

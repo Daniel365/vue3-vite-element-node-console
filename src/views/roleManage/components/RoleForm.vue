@@ -1,64 +1,66 @@
 <template>
   <!-- 新增编辑角色弹窗 -->
-  <a-modal
+  <el-dialog
     :title="isEdit ? $t('roleManage.editRole') : $t('roleManage.addRole')"
-    :open="visible"
-    :width="500"
-    @cancel="handleClose"
-    :footer="null"
+    v-model="visible"
+    width="500px"
+    @close="handleClose"
   >
-    <a-form :model="formData" :rules="rules" layout="vertical" ref="formRef">
-      <a-form-item :label="$t('form.roleName')" name="name">
-        <a-input
-          v-model:value="formData.name"
+    <el-form :model="formData" :rules="rules" label-width="100px" ref="formRef">
+      <el-form-item :label="$t('form.roleName')" prop="name">
+        <el-input
+          v-model="formData.name"
           :placeholder="$t('form.enterRoleName')"
           :maxlength="100"
-          show-count
+          show-word-limit
         />
-      </a-form-item>
+      </el-form-item>
 
-      <a-form-item :label="$t('form.roleCode')" name="code">
-        <a-input
-          v-model:value="formData.code"
+      <el-form-item :label="$t('form.roleCode')" prop="code">
+        <el-input
+          v-model="formData.code"
           :placeholder="$t('form.enterRoleCode')"
           :maxlength="100"
-          show-count
+          show-word-limit
         />
-      </a-form-item>
+      </el-form-item>
 
-      <a-form-item :label="$t('form.roleDesc')" name="description">
-        <a-textarea
-          v-model:value="formData.description"
+      <el-form-item :label="$t('form.roleDesc')" prop="description">
+        <el-input
+          v-model="formData.description"
+          type="textarea"
           :placeholder="$t('form.enterRoleDesc')"
           :maxlength="150"
-          show-count
+          show-word-limit
           :rows="3"
         />
-      </a-form-item>
+      </el-form-item>
 
-      <a-form-item :label="$t('form.status')" name="status">
-        <a-radio-group v-model:value="formData.status">
-          <a-radio :value="1">{{ $t("form.enabled") }}</a-radio>
-          <a-radio :value="0">{{ $t("form.disabled") }}</a-radio>
-        </a-radio-group>
-      </a-form-item>
-    </a-form>
+      <el-form-item :label="$t('form.status')" prop="status">
+        <el-radio-group v-model="formData.status">
+          <el-radio :value="1">{{ $t("form.enabled") }}</el-radio>
+          <el-radio :value="0">{{ $t("form.disabled") }}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+    </el-form>
 
-    <div style="text-align: right; margin-top: 24px">
-      <a-button @click="handleClose" style="margin-right: 8px">
-        {{ $t("action.cancel") }}
-      </a-button>
-      <a-button type="primary" :loading="loading" @click="handleSubmit">
-        {{ $t("action.save") }}
-      </a-button>
-    </div>
-  </a-modal>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="handleClose">
+          {{ $t("action.cancel") }}
+        </el-button>
+        <el-button type="primary" :loading="loading" @click="handleSubmit">
+          {{ $t("action.save") }}
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, watch, computed } from "vue";
-import { message } from "ant-design-vue";
-import type { FormInstance } from "ant-design-vue";
+import { ElMessage } from "element-plus";
+import type { FormInstance } from "element-plus";
 // api
 import { roleManageApi } from "@/api";
 // hooks
@@ -78,6 +80,11 @@ const emit = defineEmits<{
   "update:visible": [value: boolean];
   success: [];
 }>();
+
+const visible = computed({
+  get: () => props.visible,
+  set: (value: boolean) => emit("update:visible", value),
+});
 
 // 国际化工具
 const { getI18nText } = useI18nUtil();
@@ -166,13 +173,19 @@ const handleSubmit = async () => {
     handleReturnResults({
       params: response,
       onSuccess: () => {
-        message.success(getI18nText("action.submitSuccess"));
+        ElMessage.success(getI18nText("action.submitSuccess"));
         emit("success");
         handleClose();
       },
     });
   } catch (error) {
-    message.error(getI18nText("action.submitFailed"));
+    ElMessage.error(getI18nText("action.submitFailed"));
   }
 };
 </script>
+
+<style scoped>
+.dialog-footer {
+  text-align: right;
+}
+</style>

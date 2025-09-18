@@ -1,7 +1,7 @@
 <template>
-  <a-dropdown v-model:open="visible" trigger="click" :style="{ width }">
-    <a-input
-      v-model:value="selectedIcon"
+  <el-dropdown v-model="visible" trigger="click" :style="{ width }">
+    <el-input
+      v-model="selectedIcon"
       :placeholder="placeholder"
       readonly
       @click="visible = !visible"
@@ -10,45 +10,47 @@
         <IconFont v-if="selectedIcon" :name="selectedIcon" />
       </template>
       <template #suffix>
-        <CloseOutlined
+        <el-icon
           v-if="selectedIcon"
           @click.stop="handleClear"
-          style="color: rgba(0, 0, 0, 0.25)"
-        />
-        <DownOutlined style="color: rgba(0, 0, 0, 0.25)" />
+          style="color: rgba(0, 0, 0, 0.25); cursor: pointer;"
+        >
+          <Close />
+        </el-icon>
+        <el-icon style="color: rgba(0, 0, 0, 0.25)">
+          <ArrowDown />
+        </el-icon>
       </template>
-    </a-input>
+    </el-input>
 
-    <template #overlay>
+    <template #dropdown>
       <div class="icon-dropdown">
-        <a-input v-model:value="searchText" placeholder="搜索图标">
-          <template #prefix><SearchOutlined /></template>
-        </a-input>
+        <el-input v-model="searchText" placeholder="搜索图标">
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
 
         <div class="icon-grid">
-          <a-tooltip
+          <el-tooltip
             v-for="item in filteredSvgIcons"
             :key="item.name"
-            :title="item.name"
+            :content="item.name"
             placement="bottom"
           >
             <div class="icon-item" @click="selectIcon(item.name)">
               <IconFont :name="item.name" />
             </div>
-          </a-tooltip>
+          </el-tooltip>
         </div>
       </div>
     </template>
-  </a-dropdown>
+  </el-dropdown>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import {
-  DownOutlined,
-  CloseOutlined,
-  SearchOutlined,
-} from "@ant-design/icons-vue";
+import { Close, ArrowDown, Search } from "@element-plus/icons-vue";
 import { iconOptions } from "./utils";
 
 interface Props {
@@ -122,8 +124,8 @@ const selectIcon = (icon: string) => {
 }
 
 .icon-item:hover {
-  border-color: #1890ff;
-  background-color: #f0f8ff;
+  border-color: #409eff;
+  background-color: #ecf5ff;
 }
 
 .icon-item div {
