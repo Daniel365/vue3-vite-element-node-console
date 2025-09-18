@@ -38,7 +38,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
 // hooks
 import { useI18nUtil } from "@/hooks/i18ns";
 // utils

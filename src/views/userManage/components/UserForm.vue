@@ -1,17 +1,9 @@
 <template>
   <!-- 编辑用户抽屉 -->
-  <el-drawer
-    :title="$t('userManage.editUser')"
-    v-model="visible"
-    :size="500"
-    @close="handleClose"
-  >
+  <el-drawer :title="$t('userManage.editUser')" v-model="visible" :size="500" @close="handleClose">
     <el-form ref="formRef" :model="formData" :rules="rules" label-width="80px">
       <el-form-item :label="$t('form.username')" prop="username">
-        <el-input
-          v-model="formData.username"
-          :placeholder="$t('form.enterUsername')"
-        />
+        <el-input v-model="formData.username" :placeholder="$t('form.enterUsername')" />
       </el-form-item>
 
       <el-form-item :label="$t('form.role')" prop="roleUuid">
@@ -48,7 +40,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, computed } from "vue";
 import { ElMessage, type FormInstance } from "element-plus";
 // api
 import { userManageApi, roleManageApi } from "@/api";

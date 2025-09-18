@@ -4,7 +4,7 @@
   * @Description: 树形菜单多选
  -->
 <template>
-  <a-drawer
+  <el-drawer
     v-model="visible"
     :title="title || $t('menuManage.permissionAssignment', { roleName: '-' })"
     direction="rtl"
@@ -13,27 +13,22 @@
   >
     <div class="menu-tree-drawer">
       <div class="search-box">
-        <a-input
-          v-model="searchValue"
-          :placeholder="$t('menuManage.menuPermissionName')"
-        >
+        <el-input v-model="searchValue" :placeholder="$t('menuManage.menuPermissionName')">
           <template #prefix>
-            <a-icon><Search /></a-icon>
+            <el-icon><Search /></a-icon>
           </template>
         </a-input>
-        <a-button type="primary" link @click="handleCollapse">{{
-          $t("menuManage.collapse")
-        }}</a-button>
+        <el-button type="primary" link @click="handleCollapse">
+          {{ $t("menuManage.collapse") }}
+        </a-button>
       </div>
 
       <div class="control-box">
-        <a-checkbox v-model="checkStrictly">{{
-          $t("menuManage.parentChildLinked")
-        }}</a-checkbox>
+        <el-checkbox v-model="checkStrictly">{{ $t("menuManage.parentChildLinked") }}</a-checkbox>
       </div>
 
       <div class="tree-container">
-        <a-tree
+        <el-tree
           ref="treeRef"
           v-model:checked-keys="checkedKeys"
           :data="treeData"
@@ -49,17 +44,14 @@
       </div>
 
       <div class="footer-actions">
-        <a-button @click="handleCancel">{{ $t("action.cancel") }}</a-button>
-        <a-button type="primary" @click="handleConfirm">{{
-          $t("action.confirm")
-        }}</a-button>
+        <el-button @click="handleCancel">{{ $t("action.cancel") }}</a-button>
+        <el-button type="primary" @click="handleConfirm">{{ $t("action.confirm") }}</a-button>
       </div>
     </div>
   </a-drawer>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import { menuManageApi } from "@/api";
 import { handleReturnResults } from "@/utils/instance";
@@ -133,9 +125,7 @@ const getTreeList = async () => {
 const onExpand = (data: any, node: any) => {
   const expandedNodes = treeRef.value?.store?.nodesMap;
   if (expandedNodes) {
-    expandedKeys.value = Object.keys(expandedNodes).filter(
-      key => expandedNodes[key].expanded
-    );
+    expandedKeys.value = Object.keys(expandedNodes).filter((key) => expandedNodes[key].expanded);
   }
 };
 
@@ -161,16 +151,10 @@ const handleCancel = () => {
   visible.value = false;
 };
 
-const getAllParentIds = (
-  nodeId: string | number,
-  data: TreeNode[]
-): (string | number)[] => {
+const getAllParentIds = (nodeId: string | number, data: TreeNode[]): (string | number)[] => {
   const parentIds: (string | number)[] = [];
 
-  const findParent = (
-    nodes: TreeNode[],
-    targetId: string | number
-  ): TreeNode | null => {
+  const findParent = (nodes: TreeNode[], targetId: string | number): TreeNode | null => {
     for (const node of nodes) {
       if (node.children?.some((child) => child.value === targetId)) {
         return node;

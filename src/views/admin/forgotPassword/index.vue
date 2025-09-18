@@ -6,12 +6,7 @@
 
 <template>
   <AdminContainer :form-title="$t('admin.forgetPassword')">
-    <el-form
-      ref="formRef"
-      :model="formState"
-      :rules="rules"
-      @submit.prevent="handleSubmit"
-    >
+    <el-form ref="formRef" :model="formState" :rules="rules" @submit.prevent="handleSubmit">
       <el-form-item prop="email">
         <el-input
           type="email"
@@ -59,16 +54,15 @@
       </el-form-item>
 
       <div class="admin-actions">
-        <a @click.prevent="goToPage(RouterPath.LOGIN)">
+        <el-link type="primary" underline="never" @click.prevent="goToPage(RouterPath.LOGIN)">
           {{ $t("admin.login") }}
-        </a>
+        </el-link>
       </div>
     </el-form>
   </AdminContainer>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
 // api
@@ -96,8 +90,7 @@ const formState = reactive({
   newPassword: "",
 });
 
-const getRequiredMessage = (key: string) =>
-  getI18nText(`admin.message.${key}.required`);
+const getRequiredMessage = (key: string) => getI18nText(`admin.message.${key}.required`);
 const getMinMessage = (key: string) => getI18nText(`admin.message.${key}.min`);
 
 const rules = {

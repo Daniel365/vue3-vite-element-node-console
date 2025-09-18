@@ -13,27 +13,15 @@
     @submit.prevent="handleSubmit"
   >
     <el-form-item :label="$t('account.username')" prop="username">
-      <el-input
-        v-model="formState.username"
-        :placeholder="getRequiredMessage('username')"
-      />
+      <el-input v-model="formState.username" :placeholder="getRequiredMessage('username')" />
     </el-form-item>
 
     <el-form-item :label="$t('account.email')" prop="email">
-      <el-input
-        type="email"
-        v-model="formState.email"
-        :placeholder="getRequiredMessage('email')"
-      />
+      <el-input type="email" v-model="formState.email" :placeholder="getRequiredMessage('email')" />
     </el-form-item>
 
     <el-form-item>
-      <el-button
-        type="primary"
-        native-type="submit"
-        :loading="loading"
-        @click="handleSubmit"
-      >
+      <el-button type="primary" native-type="submit" :loading="loading" @click="handleSubmit">
         {{ $t("account.updateProfile") }}
       </el-button>
     </el-form-item>
@@ -41,7 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
 // hooks
@@ -74,8 +61,7 @@ watch(
   { immediate: true }
 );
 
-const getRequiredMessage = (key: string) =>
-  getI18nText(`account.message.${key}.required`);
+const getRequiredMessage = (key: string) => getI18nText(`account.message.${key}.required`);
 
 const rules = {
   username: [{ required: true, message: getRequiredMessage("username") }],

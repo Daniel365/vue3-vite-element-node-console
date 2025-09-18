@@ -1,35 +1,25 @@
-<!--
- * @Author: 350296245@qq.com
- * @Date: 2025-09-13 10:16:45
- * @Description: 面包屑
--->
 <template>
-  <a-breadcrumb>
-    <a-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="item.path">
+  <el-breadcrumb class="flex-y-center">
+    <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="item.path">
       <span
-        v-if="
-          item.redirect === 'noredirect' || index === breadcrumbs.length - 1
-        "
+        v-if="item.redirect === 'noredirect' || index === breadcrumbs.length - 1"
+        class="color-gray-400"
       >
         {{ item.meta.title }}
       </span>
       <a v-else @click.prevent="handleLink(item)">
         {{ item.meta.title }}
       </a>
-    </a-breadcrumb-item>
-  </a-breadcrumb>
+    </el-breadcrumb-item>
+  </el-breadcrumb>
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, ref, watch } from "vue";
+import { RouteLocationMatched, useRoute } from "vue-router";
 import { compile } from "path-to-regexp";
-import { RouteLocationMatched } from "vue-router";
 import router from "@/router";
-// hooks
-import { useRouteUtil } from "@/hooks/route";
 
-const { route: currentRoute } = useRouteUtil();
-
+const currentRoute = useRoute();
 const pathCompile = (path: string) => {
   const { params } = currentRoute;
   const toPath = compile(path);
@@ -39,14 +29,23 @@ const pathCompile = (path: string) => {
 const breadcrumbs = ref<Array<RouteLocationMatched>>([]);
 
 function getBreadcrumb() {
-  let matched = currentRoute.matched.filter(
-    (item) => item.path && item.meta && item.meta.title
-  );
-
+  let matched = currentRoute.matched.filter((item) => item.meta && item.meta.title);
+  const first = matched[0];
+  // if (!isDashboard(first)) {
+  //   matched = [{ path: "/dashboard", meta: { title: "dashboard" } } as any].concat(matched);
+  // }
   breadcrumbs.value = matched.filter((item) => {
     return item.meta && item.meta.title && item.meta.breadcrumb !== false;
   });
 }
+
+// function isDashboard(route: RouteLocationMatched) {
+//   const name = route && route.name;
+//   if (!name) {
+//     return false;
+//   }
+//   return name.toString().trim().toLocaleLowerCase() === "Dashboard".toLocaleLowerCase();
+// }
 
 function handleLink(item: any) {
   const { redirect, path } = item;
@@ -75,3 +74,11 @@ onBeforeMount(() => {
   getBreadcrumb();
 });
 </script>
+
+<style lang="scss" scoped>
+// 覆盖 element-plus 的样式
+.el-breadcrumb__inner,
+.el-breadcrumb__inner a {
+  font-weight: 400 !important;
+}
+</style>

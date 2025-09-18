@@ -23,22 +23,18 @@
       </el-form-item>
     </template>
     <el-form-item>
-      <el-button type="primary" :loading="loading" @click="handleSearch">{{
-        $t("action.search")
-      }}</el-button>
-      <el-button
-        style="margin-left: 8px"
-        :loading="loading"
-        @click="handleReset"
-        >{{ $t("action.reset") }}</el-button
-      >
+      <el-button type="primary" :loading="loading" @click="handleSearch">
+        {{ $t("action.search") }}
+      </el-button>
+      <el-button style="margin-left: 8px" :loading="loading" @click="handleReset">
+        {{ $t("action.reset") }}
+      </el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script setup lang="ts">
 import { FormTypeEnum } from "@/enums";
-import { reactive, watch } from "vue";
 
 export interface SearchField {
   key: string;

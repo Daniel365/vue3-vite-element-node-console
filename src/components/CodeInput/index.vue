@@ -24,7 +24,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onBeforeUnmount } from "vue";
 import { ElMessage } from "element-plus";
 // hooks
 import { useI18nUtil } from "@/hooks/i18ns";

@@ -6,17 +6,17 @@
 <template>
   <el-container class="layout-container">
     <el-aside :width="collapsed ? '64px' : '200px'" class="layout-aside">
-      <div class="collapse-btn" @click="collapsed = !collapsed">
-        <el-icon>
-          <Fold v-if="!collapsed" />
-          <Expand v-else />
-        </el-icon>
-      </div>
       <Logo :collapsed="collapsed" />
       <LeftMenu :menu-list="menuList" />
     </el-aside>
     <el-container>
       <el-header class="layout-header">
+        <div class="collapse-btn" @click="collapsed = !collapsed">
+          <el-icon>
+            <Fold v-if="!collapsed" />
+            <Expand v-else />
+          </el-icon>
+        </div>
         <LayoutHeader />
       </el-header>
       <el-main class="layout-content">
@@ -30,7 +30,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue";
 import { Fold, Expand } from "@element-plus/icons-vue";
 import { usePermissionStore } from "@/store";
 // type

@@ -1,6 +1,6 @@
 <template>
   <!-- 数据表格 -->
-  <a-table
+  <el-table
     row-key="id"
     :columns="columns"
     :data-source="dataList"
@@ -15,36 +15,29 @@
       </template>
       <!-- 显示状态列渲染 -->
       <template v-if="column.key === 'visibleStatus'">
-        <StatusText
-          :options="menuVisibleStatusOptions"
-          :value="record.visibleStatus"
-        />
+        <StatusText :options="menuVisibleStatusOptions" :value="record.visibleStatus" />
       </template>
       <!-- 操作列渲染 -->
       <template v-if="column.key === 'action'">
-        <a-button
-          v-if="
-            record.type === MenuTypeEnum.CATALOG ||
-            record.type === MenuTypeEnum.MENU
-          "
+        <el-button
+          v-if="record.type === MenuTypeEnum.CATALOG || record.type === MenuTypeEnum.MENU"
           type="link"
           @click="handleItemAdd(record)"
         >
           {{ $t("action.add") }}
-        </a-button>
-        <a-button type="link" @click="handleEdit(record)">
+        </el-button>
+        <el-button type="link" @click="handleEdit(record)">
           {{ $t("action.edit") }}
-        </a-button>
-        <a-button type="link" danger @click="handleDelete(record)">
+        </el-button>
+        <el-button type="link" danger @click="handleDelete(record)">
           {{ $t("action.delete") }}
-        </a-button>
+        </el-button>
       </template>
     </template>
-  </a-table>
+  </el-table>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 // api
 import { menuManageApi } from "@/api";
@@ -141,12 +134,10 @@ const getDataList = async () => {
   loading.value = true;
   emit("update:loading", true);
   try {
-    const response = await menuManageApi
-      .getList(props.searchParams)
-      .finally(() => {
-        loading.value = false;
-        emit("update:loading", false);
-      });
+    const response = await menuManageApi.getList(props.searchParams).finally(() => {
+      loading.value = false;
+      emit("update:loading", false);
+    });
     handleReturnResults({
       params: response,
       onSuccess: (res) => {
@@ -186,30 +177,28 @@ const handleEdit = (record: MenuListItem) => {
 
 // 处理删除菜单
 const handleDelete = (record: MenuListItem) => {
-  ElMessageBox.confirm(
-    "确认删除该菜单吗？",
-    "提示",
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }
-  ).then(async () => {
-    try {
-      const response = await menuManageApi.onDelete({ id: record.id });
-      handleReturnResults({
-        params: response,
-        onSuccess: () => {
-          ElMessage.success(getI18nText("action.deleteSuccess"));
-          refresh();
-        },
-      });
-    } catch (error) {
-      console.error("删除失败:", error);
-    }
-  }).catch(() => {
-    // 用户取消删除
-  });
+  ElMessageBox.confirm("确认删除该菜单吗？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      try {
+        const response = await menuManageApi.onDelete({ id: record.id });
+        handleReturnResults({
+          params: response,
+          onSuccess: () => {
+            ElMessage.success(getI18nText("action.deleteSuccess"));
+            refresh();
+          },
+        });
+      } catch (error) {
+        console.error("删除失败:", error);
+      }
+    })
+    .catch(() => {
+      // 用户取消删除
+    });
 };
 
 // 监听搜索参数变化

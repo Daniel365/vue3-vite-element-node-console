@@ -1,105 +1,210 @@
-<!--
- * @Author: 350296245@qq.com
- * @Date: 2025-08-27 18:11:40
- * @Description: 左侧菜单组件
--->
+<!-- 菜单组件 -->
 <template>
-  <a-menu
-    v-model:selectedKeys="selectedKeys"
-    v-model:openKeys="openKeys"
-    mode="inline"
-    theme="dark"
-    @click="handleMenuClick"
+  <el-menu
+    ref="menuRef"
+    :default-active="activeMenuPath"
+    :popper-effect="theme"
+    :unique-opened="false"
+    :collapse-transition="false"
+    :mode="menuMode"
+    @open="onMenuOpen"
+    @close="onMenuClose"
   >
-    <template v-for="menu in menuList" :key="menu.path">
-      <MenuItem :menu="menu" />
-    </template>
-  </a-menu>
+    <!-- 菜单项 -->
+    <MenuItem
+      v-for="route in menuList"
+      :key="route.path"
+      :item="route"
+      :base-path="resolveFullPath(route.path)"
+    />
+  </el-menu>
 </template>
 
-<script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
+<script lang="ts" setup>
+import { useRoute } from "vue-router";
+import path from "path-browserify";
+import type { MenuInstance } from "element-plus";
+import type { RouteRecordRaw } from "vue-router";
 // utils
-import { isHasArrayData } from "@/utils/dataJudgment";
-// type
-import type { AccountMenu } from "@/api/accountManage/data.d";
+import { isExternal } from "@/utils/dataJudgment";
 import MenuItem from "./MenuItem.vue";
 
-interface Props {
-  menuList: AccountMenu[];
+const props = defineProps({
+  menuList: {
+    type: Array as PropType<RouteRecordRaw[]>,
+    default: () => [],
+  },
+  basePath: {
+    type: String,
+    required: true,
+    example: "/system",
+  },
+  menuMode: {
+    type: String as PropType<"vertical" | "horizontal">,
+    default: "vertical",
+    validator: (value: string) => ["vertical", "horizontal"].includes(value),
+  },
+});
+
+const menuRef = ref<MenuInstance>();
+
+const currentRoute = useRoute();
+
+// 存储已展开的菜单项索引
+const expandedMenuIndexes: any = ref<string[]>([]);
+
+// 计算当前激活的菜单项
+const activeMenuPath = computed((): string => {
+  const { meta, path } = currentRoute;
+
+  // 如果路由meta中设置了activeMenu，则使用它（用于处理一些特殊情况，如详情页）
+  if (meta?.activeMenu && typeof meta.activeMenu === "string") {
+    return meta.activeMenu;
+  }
+
+  // 否则使用当前路由路径
+  return path;
+});
+
+/**
+ * 获取完整路径
+ *
+ * @param routePath 当前路由的相对路径  /user
+ * @returns 完整的绝对路径 D://vue3-element-admin/system/user
+ */
+function resolveFullPath(routePath: string) {
+  if (isExternal(routePath)) {
+    return routePath;
+  }
+  if (isExternal(props.basePath)) {
+    return props.basePath;
+  }
+
+  // 如果 basePath 为空（顶部布局），直接返回 routePath
+  if (!props.basePath || props.basePath === "") {
+    return routePath;
+  }
+
+  // 解析路径，生成完整的绝对路径
+  return path.resolve(props.basePath, routePath);
 }
 
-const props = defineProps<Props>();
-const router = useRouter();
-const route = useRoute();
+/**
+ * 打开菜单
+ *
+ * @param index 当前展开的菜单项索引
+ */
+const onMenuOpen = (index: string) => {
+  expandedMenuIndexes.value.push(index);
+};
 
-const selectedKeys = ref<string[]>([]);
-const openKeys = ref<string[]>([]);
+/**
+ * 关闭菜单
+ *
+ * @param index 当前收起的菜单项索引
+ */
+const onMenuClose = (index: string) => {
+  expandedMenuIndexes.value = expandedMenuIndexes.value.filter((item) => item !== index);
+};
 
-// 递归查找菜单路径，返回从根到目标的完整路径
-function findMenuPath(
-  menus: AccountMenu[],
-  targetPath: string,
-  parentPath: string[] = []
-): string[] {
-  if (isHasArrayData(menus)) {
-    for (const menu of menus) {
-      if (!menu.path) continue;
-
-      const currentPath = [...parentPath, menu.path];
-
-      if (menu.path === targetPath) {
-        return currentPath;
-      }
-
-      if (menu.children?.length) {
-        const childPath = findMenuPath(menu.children, targetPath, currentPath);
-        if (childPath.length) {
-          return childPath;
-        }
-      }
+/**
+ * 监听菜单模式变化：当菜单模式切换为水平模式时，关闭所有展开的菜单项，
+ * 避免在水平模式下菜单项显示错位。
+ */
+watch(
+  () => props.menuMode,
+  (newMode) => {
+    if (newMode === "horizontal" && menuRef.value) {
+      expandedMenuIndexes.value.forEach((item) => menuRef.value!.close(item));
     }
   }
+);
 
-  return [];
-}
+/**
+ * 监听激活菜单变化，为包含激活子菜单的父菜单添加样式类
+ */
+watch(
+  () => activeMenuPath.value,
+  () => {
+    nextTick(() => {
+      updateParentMenuStyles();
+    });
+  },
+  { immediate: true }
+);
 
-// 设置当前选中和展开的菜单
-function setCurrentMenu() {
-  const currentPath = route.path;
-  const menuPath = findMenuPath(props.menuList, currentPath);
-
-  if (menuPath.length) {
-    selectedKeys.value = [currentPath];
-    openKeys.value = menuPath.slice(0, -1); // 展开除了当前选中项之外的所有父级
-  } else {
-    selectedKeys.value = []; // 当前路由不在菜单中时清空选中状态
+/**
+ * 监听路由变化，确保菜单能随TagsView切换而正确激活
+ */
+watch(
+  () => currentRoute.path,
+  () => {
+    nextTick(() => {
+      updateParentMenuStyles();
+    });
   }
+);
+
+/**
+ * 更新父菜单样式 - 为包含激活子菜单的父菜单添加 has-active-child 类
+ */
+function updateParentMenuStyles() {
+  if (!menuRef.value?.$el) return;
+
+  nextTick(() => {
+    try {
+      const menuEl = menuRef.value?.$el as HTMLElement;
+      if (!menuEl) return;
+
+      // 移除所有现有的 has-active-child 类
+      const allSubMenus = menuEl.querySelectorAll(".el-sub-menu");
+      allSubMenus.forEach((subMenu) => {
+        subMenu.classList.remove("has-active-child");
+      });
+
+      // 查找当前激活的菜单项
+      const activeMenuItem = menuEl.querySelector(".el-menu-item.is-active");
+
+      if (activeMenuItem) {
+        // 向上查找父级 el-sub-menu 元素
+        let parent = activeMenuItem.parentElement;
+        while (parent && parent !== menuEl) {
+          if (parent.classList.contains("el-sub-menu")) {
+            parent.classList.add("has-active-child");
+          }
+          parent = parent.parentElement;
+        }
+      } else {
+        // 水平模式下可能需要特殊处理
+        if (props.menuMode === "horizontal") {
+          // 对于水平菜单，使用路径匹配来找到父菜单
+          const currentPath = activeMenuPath.value;
+
+          // 查找所有父菜单项，检查哪个包含当前路径
+          allSubMenus.forEach((subMenu) => {
+            const subMenuEl = subMenu as HTMLElement;
+            const subMenuPath =
+              subMenuEl.getAttribute("data-path") ||
+              subMenuEl.querySelector(".el-sub-menu__title")?.getAttribute("data-path");
+
+            // 如果找到包含当前路径的父菜单，则添加激活类
+            if (subMenuPath && currentPath.startsWith(subMenuPath)) {
+              subMenuEl.classList.add("has-active-child");
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error updating parent menu styles:", error);
+    }
+  });
 }
 
-// 菜单点击事件
-function handleMenuClick({ key }: { key: string }) {
-  if (key === route.path) return; // 当前页面不重复跳转
-  router.push(key);
-}
-
-// 监听路由变化
-watch(() => route.path, setCurrentMenu, { immediate: true });
-
-// 监听菜单数据变化
-watch(() => props.menuList, setCurrentMenu, { deep: true });
-
+/**
+ * 组件挂载后立即更新父菜单样式
+ */
 onMounted(() => {
-  setCurrentMenu();
+  // 确保在组件挂载后更新样式，不依赖于异步操作
+  updateParentMenuStyles();
 });
 </script>
-
-<style scoped>
-.ant-menu {
-  border-right: none;
-}
-.anticon {
-  font-size: 1.5rem;
-}
-</style>

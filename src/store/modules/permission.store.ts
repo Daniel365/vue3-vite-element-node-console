@@ -4,7 +4,6 @@
  * @Description: 菜单权限
  */
 
-import { ref } from "vue";
 import type { RouteRecordRaw } from "vue-router";
 import { defineStore } from "pinia";
 import router, { constantRoutes } from "@/router";
@@ -72,9 +71,7 @@ export const usePermissionStore = defineStore("permission", () => {
    */
   const resetRouter = () => {
     // 创建常量路由名称集合，用于O(1)时间复杂度的查找
-    const constantRouteNames = new Set(
-      constantRoutes.map((route) => route.name).filter(Boolean)
-    );
+    const constantRouteNames = new Set(constantRoutes.map((route) => route.name).filter(Boolean));
 
     // 从 router 实例中移除动态路由
     routes.value.forEach((route) => {

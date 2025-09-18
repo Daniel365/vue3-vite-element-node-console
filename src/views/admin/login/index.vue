@@ -5,12 +5,7 @@
 -->
 <template>
   <AdminContainer :form-title="$t('admin.userLogin')">
-    <el-form
-      ref="formRef"
-      :model="formState"
-      :rules="rules"
-      @submit.prevent="handleSubmit"
-    >
+    <el-form ref="formRef" :model="formState" :rules="rules" @submit.prevent="handleSubmit">
       <el-form-item prop="username">
         <el-input
           v-model="formState.username"
@@ -36,11 +31,13 @@
             {{ $t("admin.rememberMe") }}
           </el-checkbox>
           <!-- 忘记密码 -->
-          <a
+          <el-link
+            type="primary"
+            underline="never"
             @click.prevent="goToPage(RouterPath.FORGOT_PASSWORD)"
-            class="forgot-link"
-            >{{ $t("admin.forgetPassword") }}</a
           >
+            {{ $t("admin.forgetPassword") }}
+          </el-link>
         </div>
       </el-form-item>
       <!-- 登录按钮 -->
@@ -59,9 +56,9 @@
       <!-- 没有账号、去注册 -->
       <div class="admin-actions">
         <span>{{ $t("admin.noAccount") }}</span>
-        <a @click.prevent="goToPage(RouterPath.REGISTER)">{{
-          $t("admin.register")
-        }}</a>
+        <el-link type="primary" underline="never" @click.prevent="goToPage(RouterPath.REGISTER)">
+          {{ $t("admin.register") }}
+        </el-link>
       </div>
     </el-form>
     <!-- 其他登录方式 -->
@@ -82,7 +79,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
 import { useAccountStore } from "@/store";
@@ -111,8 +107,7 @@ const formState = reactive({
   remember: false,
 });
 
-const getRequiredMessage = (key: string) =>
-  getI18nText(`admin.message.${key}.required`);
+const getRequiredMessage = (key: string) => getI18nText(`admin.message.${key}.required`);
 
 const rules = {
   username: [{ required: true, message: getRequiredMessage("username") }],

@@ -26,27 +26,22 @@
         </template>
         <!-- 操作列渲染 -->
         <template v-if="column.key === 'action'">
-          <el-button type="primary" link @click="handleEdit(record)">{{
-            $t("action.edit")
-          }}</el-button>
-          <el-button type="danger" link @click="handleDelete(record)">{{
-            $t("action.delete")
-          }}</el-button>
+          <el-button type="primary" link @click="handleEdit(record)">
+            {{ $t("action.edit") }}
+          </el-button>
+          <el-button type="danger" link @click="handleDelete(record)">
+            {{ $t("action.delete") }}
+          </el-button>
         </template>
       </template>
     </DataTable>
 
     <!-- 编辑用户抽屉 -->
-    <UserForm
-      v-model:visible="editVisible"
-      :user-data="currentUser"
-      @success="handleRefresh"
-    />
+    <UserForm v-model:visible="editVisible" :user-data="currentUser" @success="handleRefresh" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 // api
 import { userManageApi } from "@/api";
@@ -140,20 +135,22 @@ const handleDelete = (record: UserListItem) => {
     }),
     getI18nText("action.confirmDelete"),
     {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
     }
-  ).then(async () => {
-    try {
-      await userManageApi.onDelete({ uuid: record.uuid });
-      ElMessage.success(getI18nText("action.deleteSuccess"));
-      tableRef.value?.refresh();
-    } catch (error) {
-      ElMessage.error(getI18nText("action.deleteFailed"));
-    }
-  }).catch(() => {
-    // 用户取消删除
-  });
+  )
+    .then(async () => {
+      try {
+        await userManageApi.onDelete({ uuid: record.uuid });
+        ElMessage.success(getI18nText("action.deleteSuccess"));
+        tableRef.value?.refresh();
+      } catch (error) {
+        ElMessage.error(getI18nText("action.deleteFailed"));
+      }
+    })
+    .catch(() => {
+      // 用户取消删除
+    });
 };
 </script>

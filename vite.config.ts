@@ -9,14 +9,8 @@ import { resolve } from "path";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
-import UnoCSS from 'unocss/vite';
-import {
-  name,
-  version,
-  engines,
-  dependencies,
-  devDependencies,
-} from "./package.json";
+import UnoCSS from "unocss/vite";
+import { name, version, engines, dependencies, devDependencies } from "./package.json";
 
 // 平台的名称、版本、运行所需的 node 版本、依赖、构建时间的类型提示
 const __APP_INFO__ = {
@@ -31,28 +25,31 @@ export default defineConfig(({ mode }: ConfigEnv) => {
     plugins: [
       vue(),
       UnoCSS(),
+      AutoImport({
+        // 导入 Vue 函数，如：ref, reactive, toRef 等
+        imports: ["vue", "pinia", "vue-router", "vue-i18n"],
+        eslintrc: {
+          enabled: false,
+          filepath: "./.eslintrc-auto-import.json",
+          globalsPropValue: true,
+        },
+        vueTemplate: true,
+        // 导入函数类型声明文件路径 (false:关闭自动生成)
+        // dts: false,
+        dts: "src/types/auto-imports.d.ts",
+      }),
+      // 组件自动导入
       Components({
         resolvers: [
-          ElementPlusResolver(),
+          // 导入 Element Plus 组件
+          ElementPlusResolver({ importStyle: "sass" }),
         ],
         // 指定自定义组件位置(默认:src/components)
         dirs: ["src/components", "src/**/components"],
         // 导入组件类型声明文件路径 (false:关闭自动生成)
-        dts: false,
+        // dts: false,
+        dts: "src/types/components.d.ts",
       }),
-      // AutoImport({
-      //   // 导入 Vue 函数，如：ref, reactive, toRef 等
-      //   imports: ["vue", "pinia", "vue-router", "vue-i18n"],
-      //   eslintrc: {
-      //     enabled: false,
-      //     filepath: "./.eslintrc-auto-import.json",
-      //     globalsPropValue: true,
-      //   },
-      //   vueTemplate: true,
-      //   // 导入函数类型声明文件路径 (false:关闭自动生成)
-      //   dts: false,
-      //   // dts: "src/types/auto-imports.d.ts",
-      // }),
     ],
     resolve: {
       alias: {
@@ -66,6 +63,15 @@ export default defineConfig(({ mode }: ConfigEnv) => {
         "/api": {
           target: "http://localhost:3000",
           changeOrigin: true,
+        },
+      },
+    },
+    css: {
+      preprocessorOptions: {
+        // 定义全局 SCSS 变量
+        scss: {
+          api: "modern-compiler",
+          additionalData: `@use "@/assets/style/theme/variables.scss" as *;`,
         },
       },
     },
@@ -103,9 +109,7 @@ export default defineConfig(({ mode }: ConfigEnv) => {
             const info = assetInfo.name.split(".");
             let extType = info[info.length - 1];
             // console.log('文件信息', assetInfo.name)
-            if (
-              /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/i.test(assetInfo.name)
-            ) {
+            if (/\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/i.test(assetInfo.name)) {
               extType = "media";
             } else if (/\.(png|jpe?g|gif|svg)(\?.*)?$/.test(assetInfo.name)) {
               extType = "img";

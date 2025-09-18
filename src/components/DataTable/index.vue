@@ -18,12 +18,7 @@
         :align="column.align"
       >
         <template #default="{ row, column: col, $index }">
-          <slot
-            name="bodyCell"
-            :column="col"
-            :record="row"
-            :index="$index"
-          />
+          <slot name="bodyCell" :column="col" :record="row" :index="$index" />
         </template>
       </el-table-column>
     </el-table>
@@ -43,7 +38,6 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, onMounted, computed } from "vue";
 // hooks
 import { useI18nUtil } from "@/hooks/i18ns";
 // utils

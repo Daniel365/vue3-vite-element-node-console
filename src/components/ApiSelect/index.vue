@@ -11,18 +11,13 @@
     :disabled="disabled"
     @focus="getDataList"
   >
-    <el-select-option
-      v-for="option in options"
-      :key="option.value"
-      :value="option.value"
-    >
+    <el-select-option v-for="option in options" :key="option.value" :value="option.value">
       {{ option.label }}
     </el-select-option>
   </el-select>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
 import { handleReturnResults } from "@/utils/instance";
 interface Option {
   label: string;

@@ -12,11 +12,7 @@
 
     <!-- 新增按钮 -->
     <div style="margin-bottom: 16px">
-      <el-button
-        v-hasPerm="[requestPath.ROLE_CREATE]"
-        type="primary"
-        @click="handleAdd"
-      >
+      <el-button v-hasPerm="[requestPath.ROLE_CREATE]" type="primary" @click="handleAdd">
         {{ $t("action.add") }}
       </el-button>
     </div>
@@ -37,32 +33,26 @@
         </template>
         <!-- 操作列渲染 -->
         <template v-if="column.key === 'action'">
-          <el-button type="primary" link @click="handleEdit(record)">{{
-            $t("action.edit")
-          }}</el-button>
-          <el-button type="primary" link @click="handleAssignPermission(record)">{{
-            $t("roleManage.assignPermission")
-          }}</el-button>
-          <el-button type="danger" link @click="handleDelete(record)">{{
-            $t("action.delete")
-          }}</el-button>
+          <el-button type="primary" link @click="handleEdit(record)">
+            {{ $t("action.edit") }}
+          </el-button>
+          <el-button type="primary" link @click="handleAssignPermission(record)">
+            {{ $t("roleManage.assignPermission") }}
+          </el-button>
+          <el-button type="danger" link @click="handleDelete(record)">
+            {{ $t("action.delete") }}
+          </el-button>
         </template>
       </template>
     </DataTable>
 
     <!-- 角色表单弹窗 -->
-    <RoleForm
-      v-model:visible="editVisible"
-      :role-data="currentRole"
-      @success="handleRefresh"
-    />
+    <RoleForm v-model:visible="editVisible" :role-data="currentRole" @success="handleRefresh" />
 
     <!-- 权限分配抽屉 -->
     <MenuTreeDrawer
       v-model:open="permissionVisible"
-      :title="
-        $t('roleManage.permissionAssignment', { roleName: currentRole?.name })
-      "
+      :title="$t('roleManage.permissionAssignment', { roleName: currentRole?.name })"
       v-model="selectedPermissions"
       @confirm="handlePermissionConfirm"
     />
@@ -70,7 +60,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 // api
 import { roleManageApi } from "@/api";
@@ -190,20 +179,22 @@ const handleDelete = (record: RoleListItem) => {
     }),
     getI18nText("action.confirmDelete"),
     {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
     }
-  ).then(async () => {
-    try {
-      await roleManageApi.onDelete({ uuid: record.uuid });
-      ElMessage.success(getI18nText("action.deleteSuccess"));
-      tableRef.value?.refresh();
-    } catch (error) {
-      ElMessage.error(getI18nText("action.deleteFailed"));
-    }
-  }).catch(() => {
-    // 用户取消删除
-  });
+  )
+    .then(async () => {
+      try {
+        await roleManageApi.onDelete({ uuid: record.uuid });
+        ElMessage.success(getI18nText("action.deleteSuccess"));
+        tableRef.value?.refresh();
+      } catch (error) {
+        ElMessage.error(getI18nText("action.deleteFailed"));
+      }
+    })
+    .catch(() => {
+      // 用户取消删除
+    });
 };
 </script>

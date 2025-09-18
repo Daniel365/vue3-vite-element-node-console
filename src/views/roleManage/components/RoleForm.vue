@@ -58,7 +58,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, computed } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
 // api
@@ -110,9 +109,7 @@ const rules = {
     { required: true, message: "请输入角色编码", trigger: "blur" },
     { max: 100, message: "角色编码不能超过100个字符", trigger: "blur" },
   ],
-  description: [
-    { max: 150, message: "角色描述不能超过150个字符", trigger: "blur" },
-  ],
+  description: [{ max: 150, message: "角色描述不能超过150个字符", trigger: "blur" }],
 };
 
 // 是否为编辑模式

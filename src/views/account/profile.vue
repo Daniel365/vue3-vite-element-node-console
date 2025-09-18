@@ -7,7 +7,7 @@
   <div class="profile-container">
     <ElCard class="profile-card">
       <template #header>
-        <span>{{ $t('account.personalCenter') }}</span>
+        <span>{{ $t("account.personalCenter") }}</span>
       </template>
       <ElTabs v-model="activeTab">
         <ElTabPane name="profile" :label="$t('account.profile')">
@@ -23,7 +23,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import { ElCard, ElTabs, ElTabPane } from "element-plus";
 // store
 import { useAccountStore } from "@/store";

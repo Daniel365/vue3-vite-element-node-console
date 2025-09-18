@@ -62,7 +62,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
 // hooks
@@ -95,15 +94,11 @@ const formState = reactive({
   confirmPassword: "",
 });
 
-const getRequiredMessage = (key: string) =>
-  getI18nText(`account.message.${key}.required`);
-const getMinMessage = (key: string) =>
-  getI18nText(`account.message.${key}.min`);
+const getRequiredMessage = (key: string) => getI18nText(`account.message.${key}.required`);
+const getMinMessage = (key: string) => getI18nText(`account.message.${key}.min`);
 
 const rules = {
-  currentPassword: [
-    { required: true, message: getRequiredMessage("currentPassword") },
-  ],
+  currentPassword: [{ required: true, message: getRequiredMessage("currentPassword") }],
   code: [{ required: true, message: getRequiredMessage("code") }],
   password: [
     { required: true, message: getRequiredMessage("newPassword") },
@@ -114,9 +109,7 @@ const rules = {
     {
       validator: (_: any, value: string) => {
         if (value && value !== formState.password) {
-          return Promise.reject(
-            new Error(getI18nText("account.message.passwordMismatch"))
-          );
+          return Promise.reject(new Error(getI18nText("account.message.passwordMismatch")));
         }
         return Promise.resolve();
       },

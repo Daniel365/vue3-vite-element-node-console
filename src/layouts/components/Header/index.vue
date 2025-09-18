@@ -13,16 +13,12 @@
       <!-- 语言切换 -->
       <el-dropdown @command="onLanguageChange">
         <el-button text class="header-btn">
-          <el-icon><Globe /></el-icon>
+          <el-icon><Goblet /></el-icon>
         </el-button>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item :command="LanguageEnum.ZH">{{
-              $t("common.zh")
-            }}</el-dropdown-item>
-            <el-dropdown-item :command="LanguageEnum.EN">{{
-              $t("common.en")
-            }}</el-dropdown-item>
+            <el-dropdown-item :command="LanguageEnum.ZH">{{ $t("common.zh") }}</el-dropdown-item>
+            <el-dropdown-item :command="LanguageEnum.EN">{{ $t("common.en") }}</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -51,12 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import {
-  Globe,
-  User,
-  SwitchButton,
-} from "@element-plus/icons-vue";
+import { Goblet, User, SwitchButton } from "@element-plus/icons-vue";
 import { useAppStore, useAccountStore } from "@/store";
 // hooks
 import { useI18nUtil } from "@/hooks/i18ns";
@@ -82,9 +73,9 @@ const onLanguageChange = (val: string) => {
 };
 
 const handleUserMenuClick = (command: string) => {
-  if (command === 'userCenter') {
+  if (command === "userCenter") {
     goToPage(RouterPath.ACCOUNT_PROFILE);
-  } else if (command === 'logout') {
+  } else if (command === "logout") {
     handleLogout();
   }
 };

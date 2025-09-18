@@ -10,12 +10,7 @@
 -->
 <template>
   <AdminContainer :form-title="$t('admin.userRegister')">
-    <el-form
-      ref="formRef"
-      :model="formState"
-      :rules="rules"
-      @submit.prevent="handleSubmit"
-    >
+    <el-form ref="formRef" :model="formState" :rules="rules" @submit.prevent="handleSubmit">
       <el-form-item prop="username">
         <el-input
           v-model="formState.username"
@@ -66,8 +61,8 @@
       </el-form-item>
       <!-- 协议 -->
       <el-form-item>
-        <el-checkbox v-model="formState.agree"
-          >{{ $t("admin.agree") }}
+        <el-checkbox v-model="formState.agree">
+          {{ $t("admin.agree") }}
           <a href="#">《{{ $t("admin.userAgreement") }}》</a>
           <span>、</span>
           <a href="#">《{{ $t("admin.privacyPolicy") }}》</a>
@@ -91,16 +86,15 @@
       <!-- 已有账号、去登录 -->
       <div class="admin-actions">
         <span>{{ $t("admin.haveAccount") }}</span>
-        <a @click.prevent="goToPage(RouterPath.LOGIN)">{{
-          $t("admin.goLogin")
-        }}</a>
+        <el-link type="primary" underline="never" @click.prevent="goToPage(RouterPath.LOGIN)">
+          {{ $t("admin.goLogin") }}
+        </el-link>
       </div>
     </el-form>
   </AdminContainer>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
 import { ElMessage } from "element-plus";
 // api
 import { adminManageApi, commonApi } from "@/api";
@@ -129,8 +123,7 @@ const formState = reactive({
   agree: true,
 });
 
-const getRequiredMessage = (key: string) =>
-  getI18nText(`admin.message.${key}.required`);
+const getRequiredMessage = (key: string) => getI18nText(`admin.message.${key}.required`);
 const getMinMessage = (key: string) => getI18nText(`admin.message.${key}.min`);
 
 const rules = {
@@ -147,9 +140,7 @@ const rules = {
     {
       validator: (_: any, value: string) => {
         if (value && value !== formState.password)
-          return Promise.reject(
-            getI18nText(`admin.message.confirmPassword.inconformity`)
-          );
+          return Promise.reject(getI18nText(`admin.message.confirmPassword.inconformity`));
         return Promise.resolve();
       },
     },

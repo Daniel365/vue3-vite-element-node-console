@@ -23,7 +23,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
 // api
 import { operationLogApi } from "@/api";
 // hooks

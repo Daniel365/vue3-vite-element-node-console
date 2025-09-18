@@ -16,7 +16,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
 import { ElTreeSelect } from "element-plus";
 import { menuManageApi } from "@/api";
 // utils

@@ -10,12 +10,7 @@
     :size="500"
     @close="handleClose"
   >
-    <el-form
-      ref="formRef"
-      :model="formState"
-      :rules="rules"
-      label-width="80px"
-    >
+    <el-form ref="formRef" :model="formState" :rules="rules" label-width="80px">
       <!-- 动态渲染表单字段 -->
       <template v-for="item in currentFields" :key="item.key">
         <el-form-item :label="$t(item.label)" :prop="item.key">
@@ -80,7 +75,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, computed } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance } from "element-plus";
 // api
@@ -142,10 +136,7 @@ const rules = {
 watch(
   () => props.editData,
   (val) => {
-    if (
-      props.actionType === ActionTypeEnum.EDIT ||
-      props.actionType === ActionTypeEnum.COPY
-    ) {
+    if (props.actionType === ActionTypeEnum.EDIT || props.actionType === ActionTypeEnum.COPY) {
       Object.assign(formState, val);
     } else {
       Object.assign(formState, defaultFormData);
@@ -202,9 +193,7 @@ const handleSubmit = async () => {
       params: response,
       onSuccess: () => {
         ElMessage.success(
-          getI18nText(
-            isEdit.value ? "action.updateSuccess" : "action.createSuccess"
-          )
+          getI18nText(isEdit.value ? "action.updateSuccess" : "action.createSuccess")
         );
         onSubmitSuccess();
       },

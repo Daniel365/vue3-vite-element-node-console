@@ -12,8 +12,28 @@ declare global {
     title: string;
     /** 系统版本 */
     version: string;
-    /** 语言 */
+    /** 是否显示设置 */
+    showSettings: boolean;
+    /** 是否显示多标签导航 */
+    showTagsView: boolean;
+    /** 是否显示应用Logo */
+    showAppLogo: boolean;
+    /** 导航栏布局(left|top|mix) */
+    layout: "left" | "top" | "mix";
+    /** 主题颜色 */
+    themeColor: string;
+    /** 主题模式(dark|light) */
+    theme: "dark" | "light";
+    /** 布局大小(default |large |small) */
+    size: string;
+    /** 语言( zh-cn| en) */
     language: string;
+    /** 是否显示水印 */
+    showWatermark: boolean;
+    /** 水印内容 */
+    watermarkContent: string;
+    /** 侧边栏配色方案 */
+    sidebarColorScheme: "classic-blue" | "minimal-white";
   }
   /**
    * 响应数据
