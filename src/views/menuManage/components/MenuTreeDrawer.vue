@@ -15,16 +15,16 @@
       <div class="search-box">
         <el-input v-model="searchValue" :placeholder="$t('menuManage.menuPermissionName')">
           <template #prefix>
-            <el-icon><Search /></a-icon>
+            <el-icon><Search /></el-icon>
           </template>
-        </a-input>
+        </el-input>
         <el-button type="primary" link @click="handleCollapse">
           {{ $t("menuManage.collapse") }}
-        </a-button>
+        </el-button>
       </div>
 
       <div class="control-box">
-        <el-checkbox v-model="checkStrictly">{{ $t("menuManage.parentChildLinked") }}</a-checkbox>
+        <el-checkbox v-model="checkStrictly">{{ $t("menuManage.parentChildLinked") }}</el-checkbox>
       </div>
 
       <div class="tree-container">
@@ -44,11 +44,11 @@
       </div>
 
       <div class="footer-actions">
-        <el-button @click="handleCancel">{{ $t("action.cancel") }}</a-button>
-        <el-button type="primary" @click="handleConfirm">{{ $t("action.confirm") }}</a-button>
+        <el-button @click="handleCancel">{{ $t("action.cancel") }}</el-button>
+        <el-button type="primary" @click="handleConfirm">{{ $t("action.confirm") }}</el-button>
       </div>
     </div>
-  </a-drawer>
+  </el-drawer>
 </template>
 
 <script setup lang="ts">
