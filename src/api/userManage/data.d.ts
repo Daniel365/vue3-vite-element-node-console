@@ -16,14 +16,14 @@ export interface UserListItem {
   username: string;
   email: string;
   status: number;
-  role_uuid: string;
-  created_at: string;
-  updated_at: string;
+  roleUuid: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 /** 用户编辑参数 */
 export interface UserEditParams {
   uuid: string;
   username: string;
-  role_uuid: string;
+  roleUuid: string;
 }

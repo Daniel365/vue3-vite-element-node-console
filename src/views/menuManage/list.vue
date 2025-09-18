@@ -12,9 +12,9 @@
 
     <!-- 新增按钮 -->
     <div style="margin-bottom: 16px">
-      <a-button type="primary" @click="handleAdd">
+      <el-button type="primary" @click="handleAdd">
         {{ $t("action.add") }}
-      </a-button>
+      </el-button>
     </div>
 
     <!-- 数据表格 -->

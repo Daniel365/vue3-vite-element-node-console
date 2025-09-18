@@ -27,7 +27,7 @@
           :placeholder="getRequiredMessage('password')"
           show-password
         />
-      </Form.Item>
+      </el-form-item>
 
       <el-form-item>
         <div class="form-options">
@@ -42,7 +42,7 @@
             >{{ $t("admin.forgetPassword") }}</a
           >
         </div>
-      </Form.Item>
+      </el-form-item>
       <!-- 登录按钮 -->
       <el-form-item>
         <el-button
@@ -55,7 +55,7 @@
         >
           {{ $t(loading ? "admin.logging" : "admin.login") }}
         </el-button>
-      </Form.Item>
+      </el-form-item>
       <!-- 没有账号、去注册 -->
       <div class="admin-actions">
         <span>{{ $t("admin.noAccount") }}</span>
@@ -71,10 +71,10 @@
       </div>
       <div class="social-login">
         <a href="#" class="social-item">
-          <MobileOutlined />
+          <el-icon><Iphone /></el-icon>
         </a>
         <a href="#" class="social-item">
-          <WechatOutlined />
+          <el-icon><ChatDotRound /></el-icon>
         </a>
       </div>
     </div>
@@ -97,6 +97,7 @@ import { handleReturnResults } from "@/utils/instance";
 import { RouterPath } from "@/router/data.d";
 // components
 import AdminContainer from "@/components/AdminContainer/index.vue";
+import { Iphone, ChatDotRound } from "@element-plus/icons-vue";
 
 const { route, goToPage, goReplace, resolveRedirectTarget } = useRouteUtil();
 const { getI18nText } = useI18nUtil();

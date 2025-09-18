@@ -4,21 +4,21 @@
  * @Description: 
 -->
 <template>
-  <a-drawer
+  <el-drawer
     :title="isEdit ? $t('action.edit') : $t('action.add')"
-    :open="visible"
-    :width="500"
+    v-model="visible"
+    :size="500"
     @close="handleClose"
   >
-    <a-form
+    <el-form
       ref="formRef"
       :model="formState"
       :rules="rules"
-      :label-col="{ span: 4 }"
+      label-width="80px"
     >
       <!-- 动态渲染表单字段 -->
       <template v-for="item in currentFields" :key="item.key">
-        <a-form-item :label="$t(item.label)" :name="item.key">
+        <el-form-item :label="$t(item.label)" :prop="item.key">
           <!-- 树形选择器 -->
           <MenuTreeSelect
             v-if="item.type === FormTypeEnum.TREE_SELECT"
@@ -26,13 +26,19 @@
             :placeholder="$t('form.selectParentMenu')"
           />
           <!-- 树形选择器 -->
-          <a-select
+          <el-select
             v-else-if="item.type === FormTypeEnum.SELECT"
-            v-model:value="(formState as any)[item.key]"
-            :options="item?.options || []"
-            show-search
-            :filter-option="(val: any, option: any) => option.label.indexOf(val) >= 0"
-          />
+            v-model="(formState as any)[item.key]"
+            filterable
+            :placeholder="$t('form.pleaseSelect')"
+          >
+            <el-option
+              v-for="option in item?.options || []"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+            />
+          </el-select>
           <!-- 单选组 -->
           <RadioGroup
             v-else-if="item.type === FormTypeEnum.RADIO_GROUP"
@@ -40,9 +46,9 @@
             :options="item?.options || []"
           />
           <!-- 数字输入 -->
-          <a-input-number
+          <el-input-number
             v-else-if="item.type === FormTypeEnum.INPUT_NUMBER"
-            v-model:value="(formState as any)[item.key]"
+            v-model="(formState as any)[item.key]"
             :min="0"
             :placeholder="$t('form.enterSort')"
           />
@@ -52,25 +58,25 @@
             v-model:modelValue="(formState as any)[item.key]"
           />
           <!-- 普通输入框 -->
-          <a-input
+          <el-input
             v-else
-            v-model:value="(formState as any)[item.key]"
+            v-model="(formState as any)[item.key]"
             :placeholder="getPlaceholder(item.key)"
           />
-        </a-form-item>
+        </el-form-item>
       </template>
-    </a-form>
+    </el-form>
     <template #footer>
       <div style="text-align: right">
-        <a-button @click="handleClose" style="margin-right: 8px">
+        <el-button @click="handleClose" style="margin-right: 8px">
           {{ $t("action.cancel") }}
-        </a-button>
-        <a-button type="primary" :loading="loading" @click="handleSubmit">
+        </el-button>
+        <el-button type="primary" :loading="loading" @click="handleSubmit">
           {{ $t("action.save") }}
-        </a-button>
+        </el-button>
       </div>
     </template>
-  </a-drawer>
+  </el-drawer>
 </template>
 
 <script setup lang="ts">

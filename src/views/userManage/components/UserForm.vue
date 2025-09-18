@@ -6,12 +6,7 @@
     :size="500"
     @close="handleClose"
   >
-    <el-form
-      ref="formRef"
-      :model="formData"
-      :rules="rules"
-      label-width="80px"
-    >
+    <el-form ref="formRef" :model="formData" :rules="rules" label-width="80px">
       <el-form-item :label="$t('form.username')" prop="username">
         <el-input
           v-model="formData.username"
@@ -62,13 +57,13 @@ import { useI18nUtil } from "@/hooks/i18ns";
 // utils
 import { handleReturnResults } from "@/utils/instance";
 // type
-import type { UserItem } from "@/api/userManage/data.d";
+import type { UserListItem } from "@/api/userManage/data.d";
 // components
 import ApiSelect from "@/components/ApiSelect/index.vue";
 
 interface Props {
   visible: boolean;
-  userData?: UserItem;
+  userData?: UserListItem;
 }
 
 const props = defineProps<Props>();

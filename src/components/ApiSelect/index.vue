@@ -4,21 +4,21 @@
  * @Description: 通过接口获取下拉数据
 -->
 <template>
-  <a-select
+  <el-select
     v-model:value="selectedValue"
     :placeholder="placeholder"
     :loading="loading"
     :disabled="disabled"
     @focus="getDataList"
   >
-    <a-select-option
+    <el-select-option
       v-for="option in options"
       :key="option.value"
       :value="option.value"
     >
       {{ option.label }}
-    </a-select-option>
-  </a-select>
+    </el-select-option>
+  </el-select>
 </template>
 
 <script setup lang="ts">
