@@ -18,7 +18,16 @@
       :search-params="searchParams"
       :columns="columns"
       v-model:data-list="tableData"
-    />
+    >
+      <template #bodyCell="{ column, record }">
+        <!-- 操作列渲染 -->
+        <template v-if="column.key === 'action'">
+          <el-button type="primary" link>
+            {{ $t("action.edit") }}
+          </el-button>
+        </template>
+      </template>
+    </DataTable>
   </div>
 </template>
 
@@ -74,12 +83,12 @@ const searchFields = computed(() => [
 
 // 表格列配置
 const columns = [
-  { titleKey: "form.action", key: "action" },
-  { titleKey: "form.description", key: "description" },
   { titleKey: "form.username", key: "username" },
+  { titleKey: "form.description", key: "description" },
   { titleKey: "form.ipAddress", key: "ipAddress" },
   { titleKey: "form.userAgent", key: "userAgent" },
   { titleKey: "form.createTime", key: "createdAt" },
+  { titleKey: "form.action", key: "action" },
 ];
 
 // 处理搜索和重置

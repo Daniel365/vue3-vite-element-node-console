@@ -2,23 +2,22 @@
   <!-- 数据表格组件 -->
   <div class="data-table">
     <!-- 表格主体 -->
-    <el-table
-      :row-key="rowKey"
-      :data="dataList"
-      v-loading="loading"
-      height="500"
-      style="width: 100%"
-    >
+    <el-table :row-key="rowKey" :data="dataList" v-loading="loading" height="500">
       <el-table-column
-        v-for="column in processedColumns"
-        :key="column.key"
-        :prop="column.dataIndex"
-        :label="column.title"
-        :width="column.width"
-        :align="column.align"
+        v-for="item in processedColumns"
+        :key="item.key"
+        :prop="item.dataIndex"
+        :label="item.title"
+        :width="item.width"
+        :align="item.align"
       >
-        <template #default="{ row, column: col, $index }">
-          <slot name="bodyCell" :column="col" :record="row" :index="$index" />
+        <template #default="{ row, $index }">
+          <slot name="bodyCell" :column="item" :record="row" :index="$index" v-if="$slots.bodyCell">
+            {{ row[item.dataIndex || item.key] }}
+          </slot>
+          <template v-else>
+            {{ row[item.dataIndex || item.key] }}
+          </template>
         </template>
       </el-table-column>
     </el-table>
@@ -81,7 +80,7 @@ const { getI18nText } = useI18nUtil();
 
 // 处理列配置，自动添加dataIndex和title
 const processedColumns = computed(() =>
-  props.columns.map((col) => ({
+  props.columns.map((col: TableColumn) => ({
     ...col,
     title: col.title || (col.titleKey ? getI18nText(col.titleKey) : ""),
     dataIndex: col.dataIndex || col.key,
