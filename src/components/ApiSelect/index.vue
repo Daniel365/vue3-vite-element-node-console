@@ -5,15 +5,15 @@
 -->
 <template>
   <el-select
-    v-model:value="selectedValue"
+    v-model="selectedValue"
     :placeholder="placeholder"
     :loading="loading"
     :disabled="disabled"
     @focus="getDataList"
   >
-    <el-select-option v-for="option in options" :key="option.value" :value="option.value">
+    <el-option v-for="option in options" :key="option.value" :value="option.value">
       {{ option.label }}
-    </el-select-option>
+    </el-option>
   </el-select>
 </template>
 

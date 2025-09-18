@@ -23,6 +23,7 @@
     "sourceMap": true,
     "useDefineForClassFields": true,
     "allowJs": true,
+    "noEmit": true,
 
     // 类型声明相关配置
     "types": ["node", "vite/client", "element-plus/global"]

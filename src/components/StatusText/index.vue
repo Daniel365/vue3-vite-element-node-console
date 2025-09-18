@@ -1,5 +1,5 @@
 <template>
-  <el-tag v-if="type === 'tag'" :color="currentOption?.color">
+  <el-tag v-if="type === 'tag'">
     {{ currentOption?.label }}
   </el-tag>
   <span v-else>{{ currentOption?.label }}</span>
