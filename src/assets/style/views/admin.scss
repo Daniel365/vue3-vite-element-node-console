@@ -124,27 +124,6 @@
       font-size: 12px;
     }
   }
-
-  .social-login {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-
-    .social-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-decoration: none;
-      color: #909399;
-      transition: all 0.3s;
-      font-size: 20px;
-
-      &:hover {
-        color: #1890ff;
-        transform: translateY(-2px);
-      }
-    }
-  }
 }
 
 // 次要动作区域（去登录/去注册/去找回）

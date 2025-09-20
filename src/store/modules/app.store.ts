@@ -8,11 +8,22 @@ import { defaultSettings } from "@/config";
 import { store } from "@/store";
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
+import { DeviceEnum, SidebarStatus } from "@/enums";
 
 export const useAppStore = defineStore("app", () => {
+  // 设备类型
+  const device = useStorage("device", DeviceEnum.DESKTOP);
   // 语言
   const language = useStorage("language", defaultSettings.language);
+  // 侧边栏状态
+  const sidebarStatus = useStorage("sidebarStatus", SidebarStatus.CLOSED);
+  const sidebar = reactive({
+    opened: sidebarStatus.value === SidebarStatus.OPENED,
+    withoutAnimation: false,
+  });
 
+  // 顶部菜单激活路径
+  const activeTopMenuPath = useStorage("activeTopMenuPath", "");
   /**
    * 切换语言
    *
@@ -22,9 +33,34 @@ export const useAppStore = defineStore("app", () => {
     language.value = val;
   }
 
+  // 切换侧边栏
+  function toggleSidebar() {
+    sidebar.opened = !sidebar.opened;
+    sidebarStatus.value = sidebar.opened ? SidebarStatus.OPENED : SidebarStatus.CLOSED;
+  }
+
+  // 关闭侧边栏
+  function closeSideBar() {
+    sidebar.opened = false;
+    sidebarStatus.value = SidebarStatus.CLOSED;
+  }
+
+  // 打开侧边栏
+  function openSideBar() {
+    sidebar.opened = true;
+    sidebarStatus.value = SidebarStatus.OPENED;
+  }
+
   return {
+    device,
     language,
+    sidebar,
+    sidebarStatus,
+    activeTopMenuPath,
     changeLanguage,
+    toggleSidebar,
+    closeSideBar,
+    openSideBar,
   };
 });
 

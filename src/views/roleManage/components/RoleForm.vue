@@ -37,10 +37,7 @@
       </el-form-item>
 
       <el-form-item :label="$t('form.status')" prop="status">
-        <el-radio-group v-model="formData.status">
-          <el-radio :value="1">{{ $t("form.enabled") }}</el-radio>
-          <el-radio :value="0">{{ $t("form.disabled") }}</el-radio>
-        </el-radio-group>
+        <radio-group v-model="formData.status" :options="enabledStatusOptions" />
       </el-form-item>
     </el-form>
 
@@ -66,6 +63,7 @@ import { roleManageApi } from "@/api";
 import { useI18nUtil } from "@/hooks/i18ns";
 // utils
 import { handleReturnResults } from "@/utils/instance";
+import { enabledStatusOptions } from "@/utils/options";
 // type
 import type { RoleListItem } from "@/api/roleManage/data.d";
 
@@ -80,15 +78,19 @@ const emit = defineEmits<{
   success: [];
 }>();
 
+// 国际化工具
+const { getI18nText } = useI18nUtil();
+const formRef = ref<FormInstance>();
+const loading = ref(false);
+
+// 是否展示弹窗
 const visible = computed({
   get: () => props.visible,
   set: (value: boolean) => emit("update:visible", value),
 });
 
-// 国际化工具
-const { getI18nText } = useI18nUtil();
-const formRef = ref<FormInstance>();
-const loading = ref(false);
+// 是否为编辑模式
+const isEdit = computed(() => !!props.roleData?.uuid);
 
 // 表单数据
 const formData = reactive({
@@ -111,9 +113,6 @@ const rules = {
   ],
   description: [{ max: 150, message: "角色描述不能超过150个字符", trigger: "blur" }],
 };
-
-// 是否为编辑模式
-const isEdit = computed(() => !!props.roleData?.uuid);
 
 // 监听角色数据变化
 watch(

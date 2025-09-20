@@ -27,7 +27,7 @@ export default defineConfig(({ mode }: ConfigEnv) => {
       UnoCSS(),
       AutoImport({
         // 导入 Vue 函数，如：ref, reactive, toRef 等
-        imports: ["vue", "pinia", "vue-router", "vue-i18n"],
+        imports: ["vue", "@vueuse/core", "pinia", "vue-router", "vue-i18n"],
         eslintrc: {
           enabled: false,
           filepath: "./.eslintrc-auto-import.json",

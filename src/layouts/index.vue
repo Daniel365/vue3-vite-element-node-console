@@ -5,74 +5,69 @@
 -->
 <template>
   <el-container class="layout-container">
-    <el-aside :width="collapsed ? '64px' : '200px'" class="layout-aside">
-      <Logo :collapsed="collapsed" />
-      <LeftMenu :menu-list="menuList" />
+    <el-aside class="layout-aside" :class="{ 'is-collapse': collapse }">
+      <system-logo :collapse="collapse" />
+      <system-menu :collapse="collapse" :data-list="menuList" />
     </el-aside>
     <el-container>
       <el-header class="layout-header">
-        <div class="collapse-btn" @click="collapsed = !collapsed">
-          <el-icon>
-            <Fold v-if="!collapsed" />
-            <Expand v-else />
-          </el-icon>
-        </div>
-        <LayoutHeader />
+        <layout-header @open-settings="onOpenSettings" />
       </el-header>
       <el-main class="layout-content">
-        <LayoutContent />
+        <layout-content />
       </el-main>
       <el-footer class="layout-footer">
-        <LayoutFooter />
+        <layout-footer />
       </el-footer>
     </el-container>
   </el-container>
+  <!-- 设置面板 - 独立于布局组件 -->
+  <!-- <SystemSettings v-if="isShowSettings" /> -->
 </template>
 
 <script lang="ts" setup>
-import { Fold, Expand } from "@element-plus/icons-vue";
-import { usePermissionStore } from "@/store";
-// type
-import { AccountMenu } from "@/api/accountManage/data.d";
+import { useSettingsStore, usePermissionStore, useAppStore } from "@/store";
+import { defaultSettings } from "@/config";
+
 // components
-import LeftMenu from "./components/Menu/index.vue";
 import LayoutHeader from "./components/Header/index.vue";
 import LayoutContent from "./components/Content/index.vue";
 import LayoutFooter from "./components/Footer/index.vue";
 
+const settingStore = useSettingsStore();
 const permissionStore = usePermissionStore();
+const appStore = useAppStore();
 
-const collapsed = ref<boolean>(false);
+// 侧边栏展开状态
+const collapse = computed(() => appStore.sidebar.opened);
 
 // 菜单数据
-const menuList: AccountMenu[] = computed(() => permissionStore.routes);
+const menuList = computed(() => permissionStore.routes);
+
+// 是否显示设置面板
+const isShowSettings = computed(() => defaultSettings.showSettings);
+
+// 打开设置面板
+const onOpenSettings = () => {
+  settingStore.settingsVisible = true;
+};
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .layout-container {
   min-height: 100vh;
 }
 
 .layout-aside {
-  background: #001529;
-  transition: width 0.2s;
+  background-color: var(--menu-background);
   position: relative;
-}
+  width: 210px;
+  transition: width 0.3s ease;
+  overflow: hidden;
 
-.collapse-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  padding: 4px;
-  cursor: pointer;
-  color: white;
-}
-
-.collapse-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  &.is-collapse {
+    width: 64px;
+  }
 }
 
 .layout-header {
@@ -83,11 +78,11 @@ const menuList: AccountMenu[] = computed(() => permissionStore.routes);
 }
 
 .layout-content {
-  background: #f0f2f5;
+  background: var(--el-bg-color-page);
 }
 
 .layout-footer {
-  background: #fff;
+  background: var(--el-bg-color-page);
   text-align: center;
   padding: 12px;
 }

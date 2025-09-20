@@ -6,20 +6,15 @@
 
 import alovaInstance from "@/utils/instance";
 import { requestPath } from "../requestPath";
-import {
-  MenuFormProps,
-  MenuListItem,
-  TreeListItem,
-  MenuListParams,
-} from "./data.d";
+import { MenuFormProps, MenuListItem, TreeListItem, MenuListParams } from "./data.d";
 
 export default {
   // 获取菜单列表
-  getList(data: MenuListParams): Promise<InterfaceResult<MenuListItem>> {
+  getList(data: MenuListParams): Promise<InterfaceResult<{ list: MenuListItem[] }>> {
     return alovaInstance.Post(requestPath.MENU_LIST, data);
   },
   // 获取树形菜单列表
-  getTreeList(): Promise<InterfaceResult<TreeListItem>> {
+  getTreeList(): Promise<InterfaceResult<{ list: TreeListItem[] }>> {
     return alovaInstance.Get(requestPath.MENU_TREE_LIST);
   },
   // 新增菜单

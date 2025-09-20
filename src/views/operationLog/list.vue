@@ -19,12 +19,16 @@
       :columns="columns"
       v-model:data-list="tableData"
     >
+      <template #expand="{ row }">
+        <UserAgentInfo :user-agent="row.userAgent" />
+      </template>
       <template #bodyCell="{ column, record }">
         <!-- 操作列渲染 -->
         <template v-if="column.key === 'action'">
-          <el-button type="primary" link>
-            {{ $t("action.edit") }}
-          </el-button>
+          <StatusText
+            :value="(requestPath as any)?.[record.action]"
+            :options="buttonPermissionOptions"
+          />
         </template>
       </template>
     </DataTable>
@@ -36,6 +40,9 @@
 import { operationLogApi } from "@/api";
 // hooks
 import { useI18nUtil } from "@/hooks/i18ns";
+// utils
+import { requestPath } from "@/api/requestPath";
+import { buttonPermissionOptions } from "../menuManage/utils/options";
 // type
 import type { OperationLogListItem } from "@/api/operationLog/data.d";
 import { FormTypeEnum } from "@/enums";
@@ -86,7 +93,7 @@ const columns = [
   { titleKey: "form.username", key: "username" },
   { titleKey: "form.description", key: "description" },
   { titleKey: "form.ipAddress", key: "ipAddress" },
-  { titleKey: "form.userAgent", key: "userAgent" },
+  // { titleKey: "form.userAgent", key: "userAgent" },
   { titleKey: "form.createTime", key: "createdAt" },
   { titleKey: "form.action", key: "action" },
 ];

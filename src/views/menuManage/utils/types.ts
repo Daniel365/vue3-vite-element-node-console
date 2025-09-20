@@ -23,3 +23,12 @@ export enum MenuVisibleStatusEnum {
   HIDE = 0,
   SHOW = 1,
 }
+
+export interface FormFieldConfig {
+  key: string;
+  label: string;
+  type: MenuTypeEnum;
+  required: boolean;
+  order: number;
+  options?: OptionsType[];
+}

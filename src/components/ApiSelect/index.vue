@@ -11,21 +11,15 @@
     :disabled="disabled"
     @focus="getDataList"
   >
-    <el-option v-for="option in options" :key="option.value" :value="option.value">
-      {{ option.label }}
-    </el-option>
+    <el-option v-for="item in options" :key="item.value" :value="item.value" :label="item.label" />
   </el-select>
 </template>
 
 <script setup lang="ts">
 import { handleReturnResults } from "@/utils/instance";
-interface Option {
-  label: string;
-  value: any;
-}
 
 interface Props {
-  api: (params: any) => Promise<{ data: { list: any[] } }>;
+  api: (params: any) => Promise<InterfaceResult>;
   pageSize?: number;
   labelField?: string;
   valueField?: string;
@@ -36,8 +30,8 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   pageSize: 50,
-  labelField: "name",
-  valueField: "uuid",
+  labelField: "label",
+  valueField: "value",
   placeholder: "",
   disabled: false,
 });
@@ -47,7 +41,7 @@ const emit = defineEmits<{
 }>();
 
 const loading = ref(false);
-const options = ref<Option[]>([]);
+const options = ref<OptionsType[]>([]);
 const selectedValue = ref(props.modelValue);
 
 // 监听外部值变化
@@ -79,6 +73,7 @@ const getDataList = async () => {
       params: response,
       onSuccess: (res) => {
         const { list = [] } = res.data || {};
+        // 数据处理
         options.value = list?.map((item: any) => ({
           label: item[props.labelField],
           value: item[props.valueField],

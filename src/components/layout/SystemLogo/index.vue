@@ -1,0 +1,44 @@
+<template>
+  <div class="layout-logo">
+    <transition enter-active-class="animate__animated animate__fadeInLeft">
+      <router-link :key="+collapse" class="wh-full flex-center" to="/">
+        <img :src="logo" class="w20px h20px" />
+        <span v-if="!collapse" class="title">
+          {{ defaultSettings.title }}
+        </span>
+      </router-link>
+    </transition>
+  </div>
+</template>
+
+<script name="Logo" lang="ts" setup>
+import { defaultSettings } from "@/config";
+import logo from "@/assets//images/logo.svg";
+
+defineProps({
+  collapse: {
+    type: Boolean,
+    required: true,
+  },
+});
+</script>
+
+<style lang="scss" scoped>
+.layout-logo {
+  width: 100%;
+  height: $navbar-height;
+  background-color: $sidebar-logo-background;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .title {
+    vertical-align: 15%;
+    flex-shrink: 0;
+    margin-left: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: $sidebar-logo-text-color;
+  }
+}
+</style>

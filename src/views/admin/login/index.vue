@@ -63,17 +63,7 @@
     </el-form>
     <!-- 其他登录方式 -->
     <div class="admin-extra">
-      <div class="divider">
-        <span>{{ $t("admin.otherLoginMethods") }}</span>
-      </div>
-      <div class="social-login">
-        <a href="#" class="social-item">
-          <el-icon><Iphone /></el-icon>
-        </a>
-        <a href="#" class="social-item">
-          <el-icon><ChatDotRound /></el-icon>
-        </a>
-      </div>
+      <OtherMethods />
     </div>
   </AdminContainer>
 </template>
@@ -91,9 +81,6 @@ import { useI18nUtil } from "@/hooks/i18ns";
 import { handleReturnResults } from "@/utils/instance";
 // type
 import { RouterPath } from "@/router/data.d";
-// components
-import AdminContainer from "@/components/AdminContainer/index.vue";
-import { Iphone, ChatDotRound } from "@element-plus/icons-vue";
 
 const { route, goToPage, goReplace, resolveRedirectTarget } = useRouteUtil();
 const { getI18nText } = useI18nUtil();

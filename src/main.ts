@@ -10,8 +10,9 @@ import setupPlugins from "@/plugins";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 // css
-import "./assets/style/index.scss";
 import "uno.css";
+import "animate.css";
+import "./assets/style/index.scss";
 
 const app = createApp(App);
 

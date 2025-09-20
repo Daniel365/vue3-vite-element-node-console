@@ -22,7 +22,7 @@
       <template #bodyCell="{ column, record }">
         <!-- 状态列渲染 -->
         <template v-if="column.key === 'status'">
-          <StatusText :options="statusOptions" :value="record.status" />
+          <StatusText :options="enabledStatusOptions" :value="record.status" />
         </template>
         <!-- 操作列渲染 -->
         <template v-if="column.key === 'action'">
@@ -47,6 +47,8 @@ import { ElMessageBox, ElMessage } from "element-plus";
 import { userManageApi } from "@/api";
 // hooks
 import { useI18nUtil } from "@/hooks/i18ns";
+// utils
+import { enabledStatusOptions } from "@/utils/options";
 // type
 import type { UserListItem } from "@/api/userManage/data.d";
 import { FormTypeEnum } from "@/enums";
@@ -56,33 +58,60 @@ import DataTable from "@/components/DataTable/index.vue";
 import UserForm from "./components/UserForm.vue";
 import StatusText from "@/components/StatusText/index.vue";
 
-// 国际化工具
+/**
+ * 国际化工具
+ */
 const { getI18nText } = useI18nUtil();
-// 表格引用
+
+/**
+ * 表格组件引用
+ */
 const tableRef = ref();
-// 加载状态
+
+/**
+ * 加载状态
+ */
 const loading = ref(false);
-// 数据来源
+
+/**
+ * 表格数据列表
+ */
 const tableData = ref<UserListItem[]>([]);
-// 编辑抽屉显示状态
+
+/**
+ * 编辑抽屉显示状态
+ */
 const editVisible = ref(false);
-// 当前编辑用户
+
+/**
+ * 当前编辑的用户数据
+ */
 const currentUser = ref<UserListItem>();
 
-// 状态选项
-const statusOptions = [
-  { label: getI18nText("form.enabled"), value: 1, color: "green" },
-  { label: getI18nText("form.disabled"), value: 0, color: "red" },
-];
+/**
+ * 搜索参数接口
+ */
+interface SearchParams {
+  /** 用户名 */
+  username: string;
+  /** 邮箱 */
+  email: string;
+  /** 状态 */
+  status: number | undefined;
+}
 
-// 搜索参数
-const searchParams = reactive({
+/**
+ * 搜索参数
+ */
+const searchParams = reactive<SearchParams>({
   username: "",
   email: "",
   status: undefined,
 });
 
-// 搜索字段配置
+/**
+ * 搜索表单字段配置
+ */
 const searchFields = computed(() => [
   {
     key: "username",
@@ -101,11 +130,13 @@ const searchFields = computed(() => [
     label: getI18nText("form.status"),
     type: FormTypeEnum.SELECT,
     placeholder: getI18nText("form.selectStatus"),
-    options: statusOptions,
+    options: enabledStatusOptions,
   },
 ]);
 
-// 表格列配置
+/**
+ * 表格列配置
+ */
 const columns = [
   { titleKey: "form.username", key: "username" },
   { titleKey: "form.email", key: "email" },
@@ -113,21 +144,29 @@ const columns = [
   { titleKey: "form.roleName", key: "roleName" },
   { titleKey: "form.createTime", key: "createdAt" },
   { titleKey: "form.updateTime", key: "updatedAt" },
-  { titleKey: "form.action", key: "action" },
+  { titleKey: "form.action", key: "action", fixed: "right" },
 ];
 
-// 处理搜索和重置
+/**
+ * 处理搜索和重置操作
+ */
 const handleRefresh = () => {
   tableRef.value?.refresh();
 };
 
-// 处理编辑用户
+/**
+ * 处理编辑用户操作
+ * @param record 用户数据
+ */
 const handleEdit = (record: UserListItem) => {
   currentUser.value = record;
   editVisible.value = true;
 };
 
-// 处理删除用户
+/**
+ * 处理删除用户操作
+ * @param record 用户数据
+ */
 const handleDelete = (record: UserListItem) => {
   ElMessageBox.confirm(
     getI18nText("userManage.deleteConfirm", {

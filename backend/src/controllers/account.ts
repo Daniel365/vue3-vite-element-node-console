@@ -28,13 +28,9 @@ export class AccountController {
   static async editPassword(req: Request, res: Response) {
     try {
       const { uuid } = req?.accountInfo || {};
-      const { email, code, current_password, password, confirm_password } =
-        req.body;
+      const { email, code, current_password, password, confirm_password } = req.body;
 
-      const { isValid, message } = onParamsVerify(
-        req.body,
-        verifyRule.editPasswordFormRule
-      );
+      const { isValid, message } = onParamsVerify(req.body, verifyRule.editPasswordFormRule);
       if (!isValid) {
         return res.status(400).json(onErrorResult(message));
       }
@@ -105,9 +101,7 @@ export class AccountController {
       },
     });
     // 提取权限标识
-    const perms = menu
-      .map((menu) => menu.permission)
-      .filter((permission) => permission); // 过滤掉空值
+    const perms = menu.map((menu) => menu.permission).filter((permission) => permission); // 过滤掉空值
     return {
       role_name: roleModel?.name,
       role_code: roleModel?.code,
@@ -121,13 +115,7 @@ export class AccountController {
     try {
       const { uuid } = req?.accountInfo || {};
       const user = await User.findByPk(uuid, {
-        attributes: [
-          ["uuid", "user_uuid"],
-          "username",
-          "email",
-          "role_uuid",
-          "status",
-        ],
+        attributes: [["uuid", "user_uuid"], "username", "email", "role_uuid", "status"],
         include: [
           {
             model: Role,
@@ -151,10 +139,7 @@ export class AccountController {
 
       res.json(onSuccessResult(userInfo));
     } catch (error) {
-      if (
-        error instanceof jwt.JsonWebTokenError ||
-        error instanceof jwt.TokenExpiredError
-      ) {
+      if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
         return res.status(401).json({ code: 401, message: "令牌无效或已过期" });
       }
       res.status(500).json({ code: 500, message: "获取用户信息失败" });
@@ -211,6 +196,9 @@ export class AccountController {
         where: {
           id: { [Op.in]: menuIds },
           visible_status: 1,
+          type: {
+            [Op.notIn]: [3, 4],
+          },
         } as any,
         order: [["sort", "ASC"]],
       });

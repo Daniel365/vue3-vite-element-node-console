@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 /*
  * @Author: 350296245@qq.com
  * @Date: 2025-09-06 22:34:36
@@ -6,37 +7,37 @@
 import { requestPath } from "@/api/requestPath";
 import { MenuTypeEnum, MenuVisibleStatusEnum } from "./types";
 
-export const menuTypeOptions = [
+export const menuTypeOptions: OptionsType[] = [
   {
     label: "目录",
     labelKey: "menuManage.catalog",
     value: MenuTypeEnum.CATALOG,
-    color: "blue",
+    theme: "warning",
   },
   {
     label: "菜单",
     labelKey: "menuManage.menu",
     value: MenuTypeEnum.MENU,
-    color: "green",
+    theme: "success",
   },
   {
     label: "按钮",
     labelKey: "menuManage.button",
     value: MenuTypeEnum.BUTTON,
-    color: "orange",
+    theme: "danger",
   },
   {
     label: "接口",
     labelKey: "menuManage.interface",
     value: MenuTypeEnum.API,
-    color: "purple",
+    theme: "primary",
   },
-  {
-    label: "外链",
-    labelKey: "menuManage.externalLink",
-    value: MenuTypeEnum.EXTERNAL,
-    color: "cyan",
-  },
+  // {
+  //   label: "外链",
+  //   labelKey: "menuManage.externalLink",
+  //   value: MenuTypeEnum.EXTERNAL,
+  //   theme: "default",
+  // },
 ];
 
 /**菜单显示隐藏 */

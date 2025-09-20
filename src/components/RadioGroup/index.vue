@@ -13,16 +13,9 @@
 </template>
 
 <script setup lang="ts">
-
-interface Option {
-  label: string;
-  labelKey?: string;
-  value: any;
-}
-
 interface Props {
   modelValue?: any;
-  options: Option[];
+  options: OptionsType[];
 }
 
 const props = defineProps<Props>();

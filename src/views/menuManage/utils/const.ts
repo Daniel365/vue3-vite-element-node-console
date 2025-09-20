@@ -5,11 +5,7 @@
  */
 import { FormTypeEnum } from "@/enums";
 import { MenuTypeEnum, MenuVisibleStatusEnum } from "./types";
-import {
-  buttonPermissionOptions,
-  menuTypeOptions,
-  menuVisibleStatusOptions,
-} from "./options";
+import { buttonPermissionOptions, menuTypeOptions, menuVisibleStatusOptions } from "./options";
 
 // 默认表单
 export const defaultFormData = {
@@ -28,26 +24,26 @@ export const defaultFormData = {
 };
 
 // 表单字段配置
-export const formFieldsConfig = {
+export const formFieldsConfig: Record<any, FormFieldConfig[]> = {
   // 公共字段 - 所有类型都需要
   common: [
     {
       key: "parentId",
-      label: "form.parentMenu",
+      labelKey: "form.parentMenu",
       type: FormTypeEnum.TREE_SELECT,
       required: false,
       order: 1,
     },
     {
       key: "name",
-      label: "form.menuName",
+      labelKey: "form.menuName",
       type: FormTypeEnum.INPUT,
       required: true,
       order: 2,
     },
     {
       key: "type",
-      label: "form.menuType",
+      labelKey: "form.menuType",
       type: FormTypeEnum.RADIO_GROUP,
       required: true,
       options: menuTypeOptions,
@@ -55,14 +51,14 @@ export const formFieldsConfig = {
     },
     {
       key: "sort",
-      label: "form.sort",
+      labelKey: "form.sort",
       type: FormTypeEnum.INPUT_NUMBER,
       required: true,
       order: 99,
     },
     {
       key: "visibleStatus",
-      label: "form.visibleStatus",
+      labelKey: "form.visibleStatus",
       type: FormTypeEnum.RADIO_GROUP,
       required: false,
       options: menuVisibleStatusOptions,
@@ -74,14 +70,14 @@ export const formFieldsConfig = {
   [MenuTypeEnum.CATALOG]: [
     {
       key: "routePath",
-      label: "form.routePath",
+      labelKey: "form.routePath",
       type: FormTypeEnum.INPUT,
       required: true,
       order: 5,
     },
     {
       key: "icon",
-      label: "form.icon",
+      labelKey: "form.icon",
       type: FormTypeEnum.CUSTOM,
       required: false,
       order: 10,
@@ -92,28 +88,32 @@ export const formFieldsConfig = {
   [MenuTypeEnum.MENU]: [
     {
       key: "routeName",
-      label: "form.routeName",
+      labelKey: "form.routeName",
       type: FormTypeEnum.INPUT,
       required: true,
       order: 4,
+      helpTips: "UserMange || UserMangeList",
     },
     {
       key: "routePath",
-      label: "form.routePath",
+      labelKey: "form.routePath",
       type: FormTypeEnum.INPUT,
       required: true,
       order: 5,
+      helpTips: "/system/userMange/list",
     },
     {
       key: "component",
-      label: "form.component",
+      labelKey: "form.component",
       type: FormTypeEnum.INPUT,
+      inputPrepend: "src/views/",
+      inputAppend: ".vue",
       required: true,
       order: 6,
     },
     {
       key: "icon",
-      label: "form.icon",
+      labelKey: "form.icon",
       type: FormTypeEnum.CUSTOM,
       required: false,
       order: 10,
@@ -124,7 +124,7 @@ export const formFieldsConfig = {
   [MenuTypeEnum.BUTTON]: [
     {
       key: "permission",
-      label: "form.permission",
+      labelKey: "form.permission",
       type: FormTypeEnum.SELECT,
       options: buttonPermissionOptions,
       required: true,
@@ -136,17 +136,11 @@ export const formFieldsConfig = {
   [MenuTypeEnum.API]: [
     {
       key: "permission",
-      label: "form.permission",
-      type: FormTypeEnum.INPUT,
+      labelKey: "form.permission",
+      type: FormTypeEnum.SELECT,
+      options: buttonPermissionOptions,
       required: true,
       order: 4,
-    },
-    {
-      key: "routePath",
-      label: "form.interfacePath",
-      type: FormTypeEnum.INPUT,
-      required: true,
-      order: 5,
     },
   ],
 
@@ -154,15 +148,15 @@ export const formFieldsConfig = {
   [MenuTypeEnum.EXTERNAL]: [
     {
       key: "routePath",
-      label: "form.externalLink",
+      labelKey: "form.externalLink",
       type: FormTypeEnum.INPUT,
       required: true,
       order: 4,
     },
     {
       key: "icon",
-      label: "form.icon",
-      type: FormTypeEnum.INPUT,
+      labelKey: "form.icon",
+      type: FormTypeEnum.CUSTOM,
       required: false,
       order: 10,
     },
@@ -172,7 +166,6 @@ export const formFieldsConfig = {
 // 获取当前类型需要显示的字段
 export const getFormFields = (type: number) => {
   const commonFields = formFieldsConfig.common;
-  const typeFields =
-    formFieldsConfig[type as keyof typeof formFieldsConfig] || [];
+  const typeFields = formFieldsConfig[type as keyof typeof formFieldsConfig] || [];
   return [...commonFields, ...typeFields].sort((a, b) => a.order - b.order);
 };

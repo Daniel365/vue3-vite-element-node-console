@@ -18,13 +18,46 @@
     </div>
 
     <!-- 数据表格 -->
-    <MenuTable
+    <DataTable
       ref="tableRef"
-      :search-params="searchParams"
+      row-key="id"
       v-model:loading="loading"
-      @item-add="handleItemAdd"
-      @edit="handleEdit"
-    />
+      :columns="columns"
+      v-model:data-list="tableData"
+    >
+      <template #bodyCell="{ column, record }">
+        <!-- 菜单类型列渲染 -->
+        <template v-if="column.key === 'name'">
+          <icon-font v-if="record.icon" class="mr-2 align--20%" :name="record.icon" size="20px" />
+          <span>{{ record.name }}</span>
+        </template>
+        <!-- 菜单类型列渲染 -->
+        <template v-if="column.key === 'type'">
+          <StatusText :options="menuTypeOptions" :value="record.type" />
+        </template>
+        <!-- 显示状态列渲染 -->
+        <template v-if="column.key === 'visibleStatus'">
+          <StatusText :options="menuVisibleStatusOptions" :value="record.visibleStatus" />
+        </template>
+        <!-- 操作列渲染 -->
+        <template v-if="column.key === 'action'">
+          <el-button
+            type="primary"
+            link
+            v-if="record.type === MenuTypeEnum.CATALOG || record.type === MenuTypeEnum.MENU"
+            @click="handleItemAdd(record)"
+          >
+            {{ $t("action.add") }}
+          </el-button>
+          <el-button type="primary" link @click="handleEdit(record)">
+            {{ $t("action.edit") }}
+          </el-button>
+          <el-button type="danger" link @click="handleDelete(record)">
+            {{ $t("action.delete") }}
+          </el-button>
+        </template>
+      </template>
+    </DataTable>
 
     <!-- 菜单表单弹窗 -->
     <MenuForm
@@ -38,16 +71,20 @@
 </template>
 
 <script setup lang="ts">
+import { ElMessage, ElMessageBox } from "element-plus";
+import { menuManageApi } from "@/api";
 // hooks
 import { useI18nUtil } from "@/hooks/i18ns";
 // utils
 import { menuTypeOptions, menuVisibleStatusOptions } from "./utils/options";
+import { handleReturnResults } from "@/utils/instance";
+import { isHasArrayData } from "@/utils/dataJudgment";
 // type
 import type { MenuListItem } from "@/api/menuManage/data.d";
 import { ActionTypeEnum, FormTypeEnum } from "@/enums";
+import { MenuTypeEnum } from "./utils/types";
 // components
 import MenuForm from "./components/MenuForm.vue";
-import MenuTable from "./components/MenuTable.vue";
 import SearchForm from "@/components/SearchForm/index.vue";
 
 // 国际化工具
@@ -62,9 +99,11 @@ const editVisible = ref(false);
 const actionType = ref<ActionTypeEnum>();
 // 当前编辑菜单
 const currentMenu = ref<MenuListItem>();
+// 列表数据
+const tableData = ref<MenuListItem[]>([]);
 
 // 搜索参数
-const searchParams = reactive({
+const searchParams = ref({
   name: "",
   type: undefined,
   visibleStatus: undefined,
@@ -94,9 +133,92 @@ const searchFields = computed(() => [
   },
 ]);
 
+// 表格列配置
+const columns = computed(() => [
+  {
+    titleKey: "form.menuName",
+    dataIndex: "name",
+    key: "name",
+    width: 180,
+    fixed: true,
+  },
+  {
+    titleKey: "form.menuType",
+    dataIndex: "type",
+    key: "type",
+    width: 100,
+  },
+  {
+    titleKey: "form.routeName",
+    dataIndex: "routeName",
+    key: "routeName",
+    width: 200,
+  },
+  {
+    titleKey: "form.routePath",
+    dataIndex: "routePath",
+    key: "routePath",
+    width: 200,
+  },
+  {
+    titleKey: "form.component",
+    dataIndex: "component",
+    key: "component",
+    width: 200,
+  },
+  {
+    titleKey: "form.sort",
+    dataIndex: "sort",
+    key: "sort",
+    width: 80,
+  },
+  {
+    titleKey: "form.visibleStatus",
+    dataIndex: "visibleStatus",
+    key: "visibleStatus",
+    width: 100,
+  },
+  {
+    titleKey: "form.action",
+    key: "action",
+    width: 250,
+    fixed: "right",
+  },
+]);
+
+// 获取菜单列表数据
+const getDataList = async () => {
+  loading.value = true;
+  try {
+    // 调用接口获取数据
+    const response = await menuManageApi.getList(searchParams.value).finally(() => {
+      loading.value = false;
+    });
+    handleReturnResults({
+      params: response,
+      onSuccess: (res) => {
+        const { list } = res.data || { list: [] };
+        // 处理children为空数组的情况，设为undefined避免显示展开图标
+        const processData = (items: MenuListItem[]): MenuListItem[] => {
+          return items.map((item) => ({
+            ...item,
+            children:
+              item.children && isHasArrayData(item.children)
+                ? processData(item?.children)
+                : undefined,
+          }));
+        };
+        tableData.value = processData(list);
+      },
+    });
+  } catch (error) {
+    console.error("获取菜单列表失败:", error);
+  }
+};
+
 // 处理搜索和重置
 const handleRefresh = () => {
-  tableRef.value?.refresh();
+  getDataList();
 };
 
 // 关闭表单
@@ -132,4 +254,34 @@ const handleEdit = (record: MenuListItem) => {
   currentMenu.value = record;
   editVisible.value = true;
 };
+
+// 处理删除菜单
+const handleDelete = (record: MenuListItem) => {
+  ElMessageBox.confirm("确认删除该菜单吗？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      try {
+        const response = await menuManageApi.onDelete({ id: record.id });
+        handleReturnResults({
+          params: response,
+          onSuccess: () => {
+            ElMessage.success(getI18nText("action.deleteSuccess"));
+            handleRefresh();
+          },
+        });
+      } catch (error) {
+        console.error("删除失败:", error);
+      }
+    })
+    .catch(() => {
+      // 用户取消删除
+    });
+};
+
+onMounted(() => {
+  getDataList();
+});
 </script>

@@ -36,32 +36,63 @@
 <script setup lang="ts">
 import { FormTypeEnum } from "@/enums";
 
+/**
+ * 搜索表单字段配置接口
+ */
 export interface SearchField {
+  /** 字段key */
   key: string;
+  /** 字段标签 */
   label: string;
+  /** 字段类型 */
   type: FormTypeEnum;
+  /** 占位符文本 */
   placeholder?: string;
+  /** 字段宽度 */
   width?: string;
-  options?: { labelKey?: string; label: string; value: any }[];
+  /** 选项数据（适用于select等） */
+  options?: OptionsType[];
 }
 
+/**
+ * 搜索表单组件属性接口
+ */
 interface Props {
+  /** 搜索字段配置列表 */
   fields: SearchField[];
+  /** 表单数据双向绑定 */
   modelValue: Record<string, any>;
+  /** 加载状态 */
   loading?: boolean;
 }
 
+/**
+ * 组件属性定义
+ */
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
 });
+
+/**
+ * 组件事件定义
+ */
 const emit = defineEmits<{
+  /** 更新表单数据 */
   "update:modelValue": [value: Record<string, any>];
+  /** 搜索事件 */
   search: [params: Record<string, any>];
+  /** 重置事件 */
   reset: [];
 }>();
 
+/**
+ * 表单数据
+ */
 const formData = reactive({ ...props.modelValue });
 
+/**
+ * 监听父组件传入的modelValue变化
+ */
 watch(
   () => props.modelValue,
   (newVal) => {
@@ -70,6 +101,9 @@ watch(
   { deep: true }
 );
 
+/**
+ * 监听表单数据变化，同步给父组件
+ */
 watch(
   formData,
   (newVal) => {
@@ -78,10 +112,16 @@ watch(
   { deep: true }
 );
 
+/**
+ * 处理搜索操作
+ */
 const handleSearch = () => {
   emit("search", { ...formData });
 };
 
+/**
+ * 处理重置操作
+ */
 const handleReset = () => {
   const resetData = props.fields.reduce((acc, field) => {
     acc[field.key] = field.type === "select" ? undefined : "";

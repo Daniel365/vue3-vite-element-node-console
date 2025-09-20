@@ -14,22 +14,34 @@ import { Storage } from "@/utils/storage";
 // types
 import { RouterPath } from "@/router/data.d";
 
-// 处理返回结果
-export function handleReturnResults({
+/**
+ * 处理API返回结果的参数接口
+ */
+interface HandleReturnResultsParams<T = any> {
+  /** API返回的结果数据 */
+  params: InterfaceResult<T>;
+  /** 成功回调函数 */
+  onSuccess: (data: InterfaceResult<T>) => void;
+  /** 是否使用默认错误处理 */
+  isDefaultError?: boolean;
+  /** 错误回调函数 */
+  onError?: (data: InterfaceResult<T>) => void;
+}
+
+/**
+ * 处理API返回结果的通用函数
+ * @param options 处理参数
+ */
+export function handleReturnResults<T = any>({
   params = {
     code: 1,
-    data: undefined,
+    data: undefined as T,
     message: "",
   },
   isDefaultError = true,
   onSuccess,
   onError,
-}: {
-  params: InterfaceResult<any>;
-  onSuccess: (data: any) => void;
-  isDefaultError?: boolean;
-  onError?: (data: any) => void;
-}): void {
+}: HandleReturnResultsParams<T>): void {
   let code = params.code;
 
   if (code === 0) {
@@ -52,7 +64,10 @@ export function handleReturnResults({
   }
 }
 
-// 实例
+/**
+ * Alova HTTP客户端实例
+ * 配置了请求拦截器、响应拦截器等
+ */
 const alovaInstance = createAlova({
   baseURL: "/api/v1.0",
   timeout: 10000,

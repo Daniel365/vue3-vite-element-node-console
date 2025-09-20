@@ -1,7 +1,7 @@
 <!--
  * @Author: 350296245@qq.com
  * @Date: 2025-09-06 20:44:18
- * @Description: 
+ * @Description: 菜单表单
 -->
 <template>
   <el-drawer
@@ -13,7 +13,7 @@
     <el-form ref="formRef" :model="formState" :rules="rules" label-width="80px">
       <!-- 动态渲染表单字段 -->
       <template v-for="item in currentFields" :key="item.key">
-        <el-form-item :label="$t(item.label)" :prop="item.key">
+        <el-form-item :label="$t(item.labelKey)" :prop="item.key">
           <!-- 树形选择器 -->
           <MenuTreeSelect
             v-if="item.type === FormTypeEnum.TREE_SELECT"
@@ -57,7 +57,14 @@
             v-else
             v-model="(formState as any)[item.key]"
             :placeholder="getPlaceholder(item.key)"
-          />
+          >
+            <template v-if="item.inputPrepend" #prepend>{{ item.inputPrepend }}</template>
+            <template v-if="item.inputAppend" #append>
+              {{ item.inputAppend }}
+            </template>
+          </el-input>
+          <!-- 帮助 -->
+          <p v-if="item.helpTips" class="color-coolGray">{{ item.helpTips }}</p>
         </el-form-item>
       </template>
     </el-form>
@@ -100,6 +107,7 @@ interface Props {
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
+  "update:visible": [value: boolean];
   success: [];
   onClose: [];
 }>();
@@ -107,6 +115,11 @@ const emit = defineEmits<{
 const { getI18nText } = useI18nUtil();
 const formRef = ref<FormInstance>();
 const loading = ref(false);
+
+const visible = computed({
+  get: () => props.visible,
+  set: (value: boolean) => emit("update:visible", value),
+});
 
 // 是否编辑
 const isEdit = computed(() => props.actionType === ActionTypeEnum.EDIT);

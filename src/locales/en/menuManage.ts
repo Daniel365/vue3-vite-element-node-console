@@ -8,6 +8,8 @@ export default {
   collapse: "Collapse",
   menuPermissionName: "Menu Permission Name",
   parentChildNotLinked: "Parent-Child Linked",
+  parentChildLinkedTips:
+    "If you only need to check the menu permission, but do not need to check the submenu or button permission, please turn off the parent-child linkage",
 
   catalog: "Catalog",
   menu: "Menu",

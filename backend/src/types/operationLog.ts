@@ -1,6 +1,6 @@
 export enum OperationAction {
-  LOGIN = "LOGIN",
-  LOGOUT = "LOGOUT",
+  ADMIN_LOGIN = "ADMIN_LOGIN",
+  ADMIN_LOGOUT = "ADMIN_LOGOUT",
   // 用户管理
   // USER_CREATE = "USER_CREATE",
   USER_UPDATE = "USER_UPDATE",
@@ -20,8 +20,8 @@ export enum OperationAction {
 }
 
 export const OperationDescription = {
-  [OperationAction.LOGIN]: "用户登录",
-  [OperationAction.LOGOUT]: "用户退出登录",
+  [OperationAction.ADMIN_LOGIN]: "用户登录",
+  [OperationAction.ADMIN_LOGOUT]: "用户退出登录",
   // 用户管理
   // [OperationAction.USER_CREATE]: "创建用户",
   [OperationAction.USER_UPDATE]: "更新用户",

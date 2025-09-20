@@ -1,9 +1,4 @@
-import {
-  useRouter,
-  useRoute,
-  LocationQuery,
-  RouteLocationRaw,
-} from "vue-router";
+import { useRouter, useRoute, LocationQuery, RouteLocationRaw } from "vue-router";
 
 // 路由参数类型定义
 type RouteParams = Record<string, string | number | boolean>;
@@ -95,6 +90,7 @@ export function useRouteUtil() {
 
   return {
     route,
+    router,
     goToPage,
     goReplace,
     goBack,

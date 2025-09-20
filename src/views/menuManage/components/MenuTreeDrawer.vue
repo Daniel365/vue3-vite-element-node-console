@@ -25,18 +25,20 @@
 
       <div class="control-box">
         <el-checkbox v-model="checkStrictly">{{ $t("menuManage.parentChildLinked") }}</el-checkbox>
+        <el-alert>
+          {{ $t("menuManage.parentChildLinkedTips") }}
+        </el-alert>
       </div>
 
       <div class="tree-container">
         <el-tree
           ref="treeRef"
-          v-model:checked-keys="checkedKeys"
           :data="treeData"
           :props="{ label: 'label', children: 'children' }"
           show-checkbox
           :check-strictly="!checkStrictly"
           :default-expanded-keys="expandedKeys"
-          :auto-expand-parent="false"
+          :default-checked-keys="checkedKeys"
           node-key="value"
           @node-expand="onExpand"
           @check="onCheck"
@@ -63,49 +65,47 @@ interface TreeNode {
 }
 
 interface Props {
-  open?: boolean;
+  visible?: boolean;
   title?: string;
   modelValue?: (string | number)[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  open: false,
+  visible: false,
   title: "",
   modelValue: () => [],
 });
 
 const emit = defineEmits<{
-  "update:open": [value: boolean];
+  "update:visible": [value: boolean];
   "update:modelValue": [value: (string | number)[]];
   confirm: [value: (string | number)[]];
 }>();
 
-const visible = ref(props.open);
 const searchValue = ref("");
 const treeData = ref<TreeNode[]>([]);
+/** 选中 */
 const checkedKeys = ref<(string | number)[]>(props.modelValue);
+/** 展开 */
 const expandedKeys = ref<(string | number)[]>([]);
+/** 父子联动 */
 const checkStrictly = ref(false);
 const treeRef = ref();
 
-watch(
-  () => props.open,
-  (val) => {
-    visible.value = val;
-  }
-);
+// 是否展示弹窗
+const visible = computed({
+  get: () => props.visible,
+  set: (value: boolean) => emit("update:visible", value),
+});
 
 watch(
   () => props.modelValue,
   (val) => {
-    checkedKeys.value = val;
+    checkedKeys.value = val.map((n) => String(n));
   }
 );
 
-watch(visible, (val) => {
-  emit("update:open", val);
-});
-
+// 获取列表
 const getTreeList = async () => {
   try {
     const response = await menuManageApi.getTreeList();

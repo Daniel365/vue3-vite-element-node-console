@@ -29,7 +29,7 @@
       <template #bodyCell="{ column, record }">
         <!-- 状态列渲染 -->
         <template v-if="column.key === 'status'">
-          <StatusText :options="statusOptions" :value="record.status" />
+          <StatusText :options="enabledStatusOptions" :value="record.status" />
         </template>
         <!-- 操作列渲染 -->
         <template v-if="column.key === 'action'">
@@ -51,9 +51,9 @@
 
     <!-- 权限分配抽屉 -->
     <MenuTreeDrawer
-      v-model:open="permissionVisible"
-      :title="$t('roleManage.permissionAssignment', { roleName: currentRole?.name })"
       v-model="selectedPermissions"
+      v-model:visible="permissionVisible"
+      :title="$t('roleManage.permissionAssignment', { roleName: currentRole?.name })"
       @confirm="handlePermissionConfirm"
     />
   </div>
@@ -63,8 +63,11 @@
 import { ElMessageBox, ElMessage } from "element-plus";
 // api
 import { roleManageApi } from "@/api";
+import { requestPath } from "@/api/requestPath";
 // hooks
 import { useI18nUtil } from "@/hooks/i18ns";
+// utils
+import { enabledStatusOptions } from "@/utils/options";
 // type
 import type { RoleListItem } from "@/api/roleManage/data.d";
 import { FormTypeEnum } from "@/enums";
@@ -72,7 +75,6 @@ import { FormTypeEnum } from "@/enums";
 import RoleForm from "./components/RoleForm.vue";
 import StatusText from "@/components/StatusText/index.vue";
 import MenuTreeDrawer from "@/views/menuManage/components/MenuTreeDrawer.vue";
-import { requestPath } from "@/api/requestPath";
 
 // 国际化工具
 const { getI18nText } = useI18nUtil();
@@ -90,12 +92,6 @@ const currentRole = ref<RoleListItem>();
 const permissionVisible = ref(false);
 // 选中的权限
 const selectedPermissions = ref<(string | number)[]>([]);
-
-// 状态选项
-const statusOptions = [
-  { label: getI18nText("form.enabled"), value: 1, color: "green" },
-  { label: getI18nText("form.disabled"), value: 0, color: "red" },
-];
 
 // 搜索参数
 const searchParams = reactive({
@@ -116,7 +112,7 @@ const searchFields = computed(() => [
     label: getI18nText("form.status"),
     type: FormTypeEnum.SELECT,
     placeholder: getI18nText("form.selectStatus"),
-    options: statusOptions,
+    options: enabledStatusOptions,
   },
 ]);
 
@@ -126,9 +122,7 @@ const columns = [
   { titleKey: "form.roleCode", key: "code" },
   { titleKey: "form.roleDesc", key: "description" },
   { titleKey: "form.status", key: "status" },
-  { titleKey: "form.createTime", key: "createdAt" },
-  { titleKey: "form.updateTime", key: "updatedAt" },
-  { titleKey: "form.action", key: "action" },
+  { titleKey: "form.action", key: "action", width: 200, fixed: "right" },
 ];
 
 // 处理搜索和重置
@@ -177,12 +171,7 @@ const handleDelete = (record: RoleListItem) => {
     getI18nText("roleManage.deleteConfirm", {
       roleName: record.name,
     }),
-    getI18nText("action.confirmDelete"),
-    {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-    }
+    getI18nText("action.confirmDelete")
   )
     .then(async () => {
       try {

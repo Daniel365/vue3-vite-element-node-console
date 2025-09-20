@@ -8,6 +8,7 @@ export default {
   collapse: "收缩",
   menuPermissionName: "菜单权限名称",
   parentChildLinked: "父子联动",
+  parentChildLinkedTips: "如果只需勾选菜单权限，不需要勾选子菜单或者按钮权限，请关闭父子联动",
 
   catalog: "目录",
   menu: "菜单",

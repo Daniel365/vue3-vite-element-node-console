@@ -4,6 +4,7 @@
  * @Description: 英文
  */
 import common from "./common";
+import systemSetting from "./systemSetting";
 import action from "./action";
 import form from "./form";
 import admin from "./admin";
@@ -13,6 +14,7 @@ import account from "./account";
 import menuManage from "./menuManage";
 export default {
   common,
+  systemSetting,
   action,
   form,
   admin,

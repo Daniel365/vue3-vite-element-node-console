@@ -6,27 +6,16 @@
 
 <template>
   <el-checkbox-group v-model="props.modelValue" @change="handleChange">
-    <el-checkbox
-      v-for="item in props.options"
-      :key="item.value"
-      :value="item.value"
-    >
+    <el-checkbox v-for="item in props.options" :key="item.value" :value="item.value">
       {{ item.labelKey ? $t(item.labelKey) : item.label }}
     </el-checkbox>
   </el-checkbox-group>
 </template>
 
 <script setup lang="ts">
-
-interface Option {
-  label: string;
-  labelKey?: string;
-  value: any;
-}
-
 interface Props {
   modelValue?: any[];
-  options: Option[];
+  options: OptionsType[];
 }
 
 const props = defineProps<Props>();

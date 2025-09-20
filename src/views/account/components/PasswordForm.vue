@@ -77,7 +77,7 @@ import CodeInput from "@/components/CodeInput/index.vue";
 
 interface Props {
   accountInfo: {
-    email: string;
+    email?: string;
   };
 }
 
@@ -121,7 +121,9 @@ const rules = {
 watch(
   () => props.accountInfo,
   (newVal) => {
-    formState.email = newVal.email;
+    if (newVal?.email) {
+      formState.email = newVal.email;
+    }
   },
   { immediate: true }
 );
